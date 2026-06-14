@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kayque Cavalcanti da Silva | Portfólio</title>
+  <meta name="description" content="Portfólio de Kayque Cavalcanti da Silva — Técnico de TI & Estudante de Engenharia de Software." />
+
+  <!-- Fontes: Inter (corpo), VT323 (display/glitch), Press Start 2P (acentos pixelados) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================ NAVBAR ============================ -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="logo">KC<span class="dot">.</span>dev</a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="nav-link">Início</a></li>
+        <li><a href="#about" class="nav-link">Sobre</a></li>
+        <li><a href="#projects" class="nav-link">Projetos</a></li>
+        <li><a href="#services" class="nav-link">Serviços</a></li>
+        <li><a href="#contact" class="nav-link nav-cta">Contato</a></li>
+      </ul>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================ HERO ============================ -->
+  <header class="hero" id="home">
+    <div class="hero-gradient" aria-hidden="true"></div>
+    <canvas class="hero-pong" id="pongCanvas" aria-hidden="true"></canvas>
+    <div class="hero-content">
+      <h1 class="hero-title reveal" id="heroTitle"><span class="hero-title-text">KAYQUE CAVALCANTI</span></h1>
+      <p class="hero-subtitle reveal" id="heroSubtitle"><span class="hero-subtitle-text">Engenheiro de Software</span></p>
+    </div>
+    <div class="scroll-indicator"><span></span></div>
+  </header>
+
+  <!-- ============================ MARQUEE ============================ -->
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- O grupo é duplicado via JS para garantir o loop perfeito -->
+      <div class="marquee-group">
+        <span class="marquee-item">C</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">Python</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">Lógica de Programação</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">Estruturas de Dados</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">Flask</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">SQLite</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">Redes</span><span class="marquee-sep">•</span>
+        <span class="marquee-item">Hardware</span><span class="marquee-sep">•</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ SOBRE ============================ -->
+  <section class="about" id="about">
+    <div class="container about-grid">
+      <div class="about-image reveal">
+        <img src="Pefil.jpg" alt="Foto de perfil de Kayque Cavalcanti da Silva" />
+        <div class="availability-badge">
+          <span class="pulse-dot"></span>
+          Disponível para novos projetos
+        </div>
+      </div>
+
+      <div class="about-content reveal">
+        <span class="section-label">// Sobre mim</span>
+        <h2 class="about-title">Código que pensa.<br />Infraestrutura que resolve.</h2>
+        <p class="about-text">
+          Tudo começou com uma pergunta de jogador: <strong>"o que está rodando por trás da tela?"</strong>.
+          Essa curiosidade me levou direto para dentro da máquina — para C, gerenciamento de memória,
+          complexidade de algoritmos (Big O) e as estruturas de dados que sustentam qualquer sistema,
+          as mesmas que sustentam a engine, a física e as regras de um jogo, muito antes de me
+          preocupar com o que aparece na tela.
+        </p>
+        <p class="about-text">
+          Hoje, como <strong>Técnico de TI</strong> e estudante de <strong>Engenharia de Software</strong>,
+          uso essa base para construir coisas que funcionam de ponta a ponta: do cabo de rede ao
+          código, da infraestrutura ao painel que mostra os resultados. Gosto de pegar um problema
+          real, entender cada camada e cada estado envolvido — como quem estuda as regras de um jogo —
+          e entregar uma solução que simplesmente funciona.
+        </p>
+
+        <div class="about-focus-grid">
+          <div class="focus-item">
+            <span class="focus-icon">0x01</span>
+            <div>
+              <h4>Fundamentos</h4>
+              <p>C, lógica e estruturas de dados como base de tudo.</p>
+            </div>
+          </div>
+          <div class="focus-item">
+            <span class="focus-icon">0x02</span>
+            <div>
+              <h4>Desenvolvimento</h4>
+              <p>Python, Flask, FastAPI e SQLite em soluções funcionais.</p>
+            </div>
+          </div>
+          <div class="focus-item">
+            <span class="focus-icon">0x03</span>
+            <div>
+              <h4>Infraestrutura</h4>
+              <p>Redes, hardware e monitoramento na prática.</p>
+            </div>
+          </div>
+          <div class="focus-item">
+            <span class="focus-icon">0x04</span>
+            <div>
+              <h4>Mentalidade</h4>
+              <p>Aprender construindo e resolver problemas reais.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PROJETOS ============================ -->
+  <section class="projects" id="projects">
+    <div class="container">
+      <span class="section-label reveal">// Projetos</span>
+      <h2 class="section-title reveal">Projetos Recentes</h2>
+      <p class="scroll-hint reveal">Arraste para o lado →</p>
+
+      <div class="projects-grid" id="projectsGrid">
+
+        <!-- Card 1: Torre de Comando (destaque) -->
+        <article class="project-card featured reveal">
+          <div class="card-inner">
+            <div class="project-header">
+              <span class="project-number">LVL. 01</span>
+              <h3>Torre de Comando</h3>
+            </div>
+            <p>
+              Sistema de monitoramento de redes. Faz ping em unidades de servidores em tempo real,
+              registra o histórico de uptime e exibe o status geral em um painel web dinâmico.
+            </p>
+            <div class="tags">
+              <span class="tag">Python</span>
+              <span class="tag">Flask</span>
+              <span class="tag">SQLite</span>
+              <span class="tag">Monitoramento</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2: Painel de Monitoramento -->
+        <article class="project-card reveal reveal-delay-1">
+          <div class="card-inner">
+            <div class="project-header">
+              <span class="project-number">LVL. 02</span>
+              <h3>Painel de Monitoramento</h3>
+            </div>
+            <p>
+              Painel de monitoramento de sistemas pronto para produção, com telemetria via
+              WebSocket em tempo real, gráficos reativos, persistência de histórico e alertas
+              de limite configuráveis.
+            </p>
+            <div class="tags">
+              <span class="tag">Python</span>
+              <span class="tag">Flask</span>
+              <span class="tag">WebSocket</span>
+              <span class="tag">Vanilla JS</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3: Processador OCR de PDF Assíncrono -->
+        <article class="project-card reveal reveal-delay-2">
+          <div class="card-inner">
+            <div class="project-header">
+              <span class="project-number">LVL. 03</span>
+              <h3>Processador OCR de PDF</h3>
+            </div>
+            <p>
+              Sistema de processamento de PDF assíncrono de nível de produção. Recebe uploads
+              via API REST, enfileira o processamento com RabbitMQ e extrai o texto via parsing
+              nativo, com OCR automático para documentos digitalizados.
+            </p>
+            <div class="tags">
+              <span class="tag">Python</span>
+              <span class="tag">API REST</span>
+              <span class="tag">RabbitMQ</span>
+              <span class="tag">OCR</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4: Sistema de Cotação -->
+        <article class="project-card reveal">
+          <div class="card-inner">
+            <div class="project-header">
+              <span class="project-number">LVL. 04</span>
+              <h3>Sistema de Cotação</h3>
+            </div>
+            <p>
+              Sistema de orçamento e cotação com backend em FastAPI e frontend em HTML, CSS e
+              JavaScript, automatizando o fluxo entre solicitação e proposta.
+            </p>
+            <div class="tags">
+              <span class="tag">FastAPI</span>
+              <span class="tag">HTML/CSS/JS</span>
+              <span class="tag">Automação</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 5: Em breve -->
+        <article class="project-card coming-soon reveal reveal-delay-1">
+          <div class="card-inner">
+            <span class="coming-soon-icon">_</span>
+            <h3>Próximo Projeto</h3>
+            <p>Algo novo está sendo compilado. Em construção.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ MAIS PROJETOS (GITHUB) ============================ -->
+  <section class="github-projects" id="github-projects">
+    <div class="container">
+      <span class="section-label reveal">// Mais Projetos</span>
+      <h2 class="section-title reveal">Repositórios no GitHub</h2>
+      <p class="section-intro reveal">
+        Alguns dos meus repositórios públicos, carregados automaticamente em tempo real via API do GitHub.
+      </p>
+
+      <div class="github-grid" id="githubGrid">
+        <p class="github-status">Carregando repositórios...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ MÁQUINA DE DESENVOLVIMENTO ============================ -->
+  <section class="dev-machine" id="dev-machine">
+    <div class="container">
+      <span class="section-label reveal">// Setup</span>
+      <h2 class="section-title reveal">Máquina de Desenvolvimento</h2>
+      <p class="section-intro reveal">
+        As ferramentas que uso no dia a dia para programar, testar e colocar projetos no ar.
+      </p>
+
+      <div class="tools-grid">
+        <div class="tool-card reveal">
+          <span class="tool-icon">VSC</span>
+          <h4>VS Code</h4>
+          <p>Editor principal</p>
+        </div>
+        <div class="tool-card reveal reveal-delay-1">
+          <span class="tool-icon">WIN</span>
+          <h4>Windows 11</h4>
+          <p>Sistema operacional</p>
+        </div>
+        <div class="tool-card reveal reveal-delay-2">
+          <span class="tool-icon">GIT</span>
+          <h4>Git &amp; GitHub</h4>
+          <p>Controle de versão</p>
+        </div>
+        <div class="tool-card reveal reveal-delay-3">
+          <span class="tool-icon">_$</span>
+          <h4>PowerShell / Bash</h4>
+          <p>Terminal do dia a dia</p>
+        </div>
+        <div class="tool-card reveal">
+          <span class="tool-icon">PY</span>
+          <h4>Python</h4>
+          <p>Scripts e back-end</p>
+        </div>
+        <div class="tool-card reveal reveal-delay-1">
+          <span class="tool-icon">C</span>
+          <h4>C / GCC</h4>
+          <p>Fundamentos de baixo nível</p>
+        </div>
+        <div class="tool-card reveal reveal-delay-2">
+          <span class="tool-icon">API</span>
+          <h4>Flask / FastAPI</h4>
+          <p>APIs e back-end web</p>
+        </div>
+        <div class="tool-card reveal reveal-delay-3">
+          <span class="tool-icon">DB</span>
+          <h4>SQLite</h4>
+          <p>Banco de dados leve</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FRASE DE IMPACTO ============================ -->
+  <section class="quote-section">
+    <div class="container">
+      <p class="quote-mark reveal" aria-hidden="true">"</p>
+      <p class="quote-text reveal">
+        Talk is cheap. <span class="quote-highlight">Show me the code.</span>
+      </p>
+      <p class="quote-author reveal">— Linus Torvalds, <span>criador do Linux e do Git</span></p>
+    </div>
+  </section>
+
+  <!-- ============================ SERVIÇOS ============================ -->
+  <section class="services" id="services">
+    <div class="container">
+      <span class="section-label reveal">// Serviços</span>
+      <h2 class="section-title reveal">Como posso ajudar</h2>
+
+      <div class="services-grid">
+
+        <!-- Serviço 1 -->
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
+          </div>
+          <h3>Web &amp; Interfaces</h3>
+          <p>Sites, painéis e interfaces rápidas, responsivas e bem estruturadas.</p>
+          <ul class="service-list">
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Layout responsivo (mobile-first)</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Painéis e dashboards dinâmicos</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Integração com back-end (Flask)</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Performance e boas práticas</li>
+          </ul>
+          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e tenho um projeto de site/interface. Podemos conversar sobre um orçamento?">Solicitar Orçamento</a>
+        </div>
+
+        <!-- Serviço 2 -->
+        <div class="service-card reveal reveal-delay-1">
+          <div class="service-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="6" rx="1"/><rect x="2" y="9" width="20" height="6" rx="1"/><rect x="2" y="16" width="20" height="6" rx="1"/><circle cx="6" cy="5" r="0.5"/><circle cx="6" cy="12" r="0.5"/><circle cx="6" cy="19" r="0.5"/></svg>
+          </div>
+          <h3>Infraestrutura &amp; Redes</h3>
+          <p>Configuração, organização e monitoramento de redes e servidores.</p>
+          <ul class="service-list">
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Monitoramento de uptime</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Configuração de redes locais</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Manutenção de hardware</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Diagnóstico e suporte técnico</li>
+          </ul>
+          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e preciso de ajuda com infraestrutura/redes. Podemos conversar?">Solicitar Orçamento</a>
+        </div>
+
+        <!-- Serviço 3 -->
+        <div class="service-card reveal reveal-delay-2">
+          <div class="service-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3>Software &amp; Automação</h3>
+          <p>Scripts, ferramentas e sistemas que automatizam tarefas repetitivas.</p>
+          <ul class="service-list">
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Automação de processos</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Scripts em Python/C</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Integração com bancos de dados</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Lógica sob medida</li>
+          </ul>
+          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e tenho uma ideia de automação/software. Podemos conversar sobre um orçamento?">Solicitar Orçamento</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="footer" id="contact">
+    <div class="footer-glow" aria-hidden="true"></div>
+    <h2 class="footer-bg-text" aria-hidden="true">KAYQUE CAVALCANTI</h2>
+
+    <div class="footer-marquee">
+      <div class="marquee-track" id="footerMarqueeTrack">
+        <div class="marquee-group">
+          <span class="marquee-item">Disponível para novos projetos</span><span class="marquee-sep">•</span>
+          <span class="marquee-item">Vamos construir algo</span><span class="marquee-sep">•</span>
+          <span class="marquee-item">Código • Redes • Infraestrutura</span><span class="marquee-sep">•</span>
+          <span class="marquee-item">Aberto a freelas e parcerias</span><span class="marquee-sep">•</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-content reveal">
+      <span class="section-label">// Contato</span>
+      <h2 class="footer-title">Entre em contato?</h2>
+      <p class="footer-text">Aberto a oportunidades, projetos e parcerias. Vamos conversar.</p>
+
+      <div class="footer-links">
+        <a href="https://github.com/KayqueCavalcanti?tab=repositories" target="_blank" rel="noopener noreferrer" class="oval-link">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.34-1.11.62-1.36-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.05a9.4 9.4 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.94-2.34 4.81-4.57 5.06.36.32.67.94.67 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/kayque-cavalcanti-090438350/" target="_blank" rel="noopener noreferrer" class="oval-link">
+          <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:kayque.silva969@gmail.com" class="oval-link">
+          <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+          E-mail
+        </a>
+        <a href="#" class="oval-link wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e gostaria de conversar sobre um projeto.">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+
+      <p class="footer-copy">© 2026 Kayque Cavalcanti da Silva. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- ============================ JAVASCRIPT ============================ -->
+  <script src="script.js"></script>
+
+</body>
+</html>
