@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kayquecavalcanti.github.io/portifolio/sitemap.xml

@@ -1,4 +1,106 @@
     // -----------------------------------------------------------
+    // 0. INTERNACIONALIZAÇÃO (PT/EN) — dicionário em translations.js,
+    //    aplicado via atributos data-i18n / data-i18n-html /
+    //    data-i18n-attr-* e data-i18n-title (este último para o
+    //    componente <project-card>). Idioma persistido em
+    //    localStorage e reaplicado a cada carregamento da página
+    // -----------------------------------------------------------
+    const LANG_STORAGE_KEY = 'portfolio-lang';
+    let currentLang = localStorage.getItem(LANG_STORAGE_KEY) === 'en' ? 'en' : 'pt';
+
+    function getDictValue(dict, path) {
+      return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), dict);
+    }
+
+    function t(path) {
+      const value = getDictValue(TRANSLATIONS[currentLang], path);
+      if (value !== undefined) return value;
+      return getDictValue(TRANSLATIONS.pt, path);
+    }
+
+    function translateProjectCard(card) {
+      if (!card.shadowRoot) return;
+
+      const titleKey = card.dataset.i18nTitle;
+      if (titleKey) {
+        const h3 = card.shadowRoot.querySelector('h3');
+        if (h3) h3.textContent = t(titleKey);
+      }
+
+      const link = card.shadowRoot.querySelector('.project-link');
+      if (link) {
+        const textNode = Array.from(link.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+        if (textNode) textNode.textContent = t('projects.viewCaseStudy');
+      }
+    }
+
+    function translateMarquee(track) {
+      if (!track || !track.dataset.originalHtml) return;
+
+      const temp = document.createElement('div');
+      temp.innerHTML = track.dataset.originalHtml;
+      temp.querySelectorAll('[data-i18n]').forEach((el) => {
+        const value = getDictValue(TRANSLATIONS[currentLang], el.dataset.i18n);
+        if (value !== undefined) el.textContent = value;
+      });
+      track.dataset.originalHtml = temp.innerHTML;
+      fillMarquee(track);
+    }
+
+    function applyTranslations(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang === 'en' ? 'en' : 'pt-BR';
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const value = getDictValue(TRANSLATIONS[lang], el.dataset.i18n);
+        if (value !== undefined) el.textContent = value;
+      });
+
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+        const value = getDictValue(TRANSLATIONS[lang], el.dataset.i18nHtml);
+        if (value !== undefined) el.innerHTML = value;
+      });
+
+      document.querySelectorAll('[data-i18n-attr-placeholder]').forEach((el) => {
+        const value = getDictValue(TRANSLATIONS[lang], el.dataset.i18nAttrPlaceholder);
+        if (value !== undefined) el.setAttribute('placeholder', value);
+      });
+
+      document.querySelectorAll('[data-i18n-attr-aria-label]').forEach((el) => {
+        const value = getDictValue(TRANSLATIONS[lang], el.dataset.i18nAttrAriaLabel);
+        if (value !== undefined) el.setAttribute('aria-label', value);
+      });
+
+      document.querySelectorAll('project-card[data-i18n-title]').forEach(translateProjectCard);
+
+      translateMarquee(document.getElementById('marqueeTrack'));
+      translateMarquee(document.getElementById('footerMarqueeTrack'));
+
+      const hint = document.getElementById('projectsHint');
+      const pin = document.getElementById('projectsPin');
+      if (hint && pin) {
+        hint.textContent = pin.classList.contains('pin-active') ? t('projects.hintScroll') : t('projects.hintDrag');
+      }
+
+      if (langToggle) {
+        langToggle.textContent = lang === 'pt' ? 'EN' : 'PT';
+        langToggle.setAttribute('aria-label', lang === 'pt' ? t('nav.langToggleToEn') : t('nav.langToggleToPt'));
+      }
+
+      document.dispatchEvent(new CustomEvent('languagechange', { detail: { lang } }));
+    }
+
+    function setLanguage(lang) {
+      localStorage.setItem(LANG_STORAGE_KEY, lang);
+      applyTranslations(lang);
+    }
+
+    const langToggle = document.getElementById('langToggle');
+    langToggle.addEventListener('click', () => {
+      setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+    });
+
+    // -----------------------------------------------------------
     // 1. MENU MOBILE (toggle do hambúrguer)
     // -----------------------------------------------------------
     const navToggle = document.getElementById('navToggle');
@@ -32,26 +134,72 @@
     // 3. NAVBAR: leve mudança de fundo ao rolar a página
     // -----------------------------------------------------------
     const navbar = document.getElementById('navbar');
+    // Estado visual definido via classe (CSS cuida das cores/sombra);
+    // listener passivo evita bloquear o scroll
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 40) {
-        navbar.style.background = 'rgba(10, 10, 12, 0.8)';
-        navbar.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-        navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.5)';
-      } else {
-        navbar.style.background = 'rgba(17, 17, 20, 0.55)';
-        navbar.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-        navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.35)';
-      }
-    });
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
 
     // -----------------------------------------------------------
     // 4. MARQUEE INFINITO: duplica o conteúdo para um loop perfeito
     // -----------------------------------------------------------
-    const marqueeTrack = document.getElementById('marqueeTrack');
-    marqueeTrack.innerHTML += marqueeTrack.innerHTML;
+    function fillMarquee(track) {
+      if (!track.dataset.originalHtml) {
+        track.dataset.originalHtml = track.innerHTML;
+        // Duração-base da animação definida no CSS (para 2 cópias do conteúdo).
+        track.dataset.baseDuration = parseFloat(getComputedStyle(track).animationDuration) || 32;
+      }
+      const original = track.dataset.originalHtml;
+      const containerWidth = track.parentElement.offsetWidth;
 
-    const footerMarqueeTrack = document.getElementById('footerMarqueeTrack');
-    footerMarqueeTrack.innerHTML += footerMarqueeTrack.innerHTML;
+      // Reconstrói a partir do conteúdo original (evita acumular cópias
+      // de execuções anteriores, ex.: após o carregamento das fontes).
+      let html = original;
+      let repeats = 1;
+      track.innerHTML = html;
+
+      // Duplica até a faixa ter pelo menos 2x a largura do container,
+      // garantindo que translateX(-50%) nunca exponha vazio.
+      let safety = 0;
+      while (track.scrollWidth < containerWidth * 2 && safety < 12) {
+        html += original;
+        repeats++;
+        track.innerHTML = html;
+        safety++;
+      }
+
+      // Número par de repetições: a 1ª metade == 2ª metade, então
+      // translateX(-50%) corresponde exatamente à largura de uma metade.
+      if (repeats % 2 !== 0) {
+        html += original;
+        track.innerHTML = html;
+      }
+
+      // Mantém a velocidade (px/s) constante: quanto mais cópias forem
+      // necessárias para preencher a tela, mais longa fica a animação.
+      const baseDuration = parseFloat(track.dataset.baseDuration);
+      track.style.animationDuration = `${baseDuration * (repeats / 2)}s`;
+    }
+
+    function setupMarquee(track) {
+      fillMarquee(track);
+
+      // As fontes (Press Start 2P / VT323) carregam com "display: swap" e
+      // mudam a largura do texto depois do primeiro cálculo — recalcula
+      // quando estiverem prontas para evitar o vazio "atrasado".
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => fillMarquee(track));
+      }
+
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => fillMarquee(track), 200);
+      });
+    }
+
+    setupMarquee(document.getElementById('marqueeTrack'));
+    setupMarquee(document.getElementById('footerMarqueeTrack'));
 
     // -----------------------------------------------------------
     // 4.1 BOTÕES DE WHATSAPP: monta o link com a mensagem pronta
@@ -63,15 +211,83 @@
     });
 
     // -----------------------------------------------------------
-    // 4.2 SCROLL HORIZONTAL: permite rolar os projetos com a roda do mouse
+    // 4.2 PROJETOS: garante que o carrossel comece sempre no 1º card
+    // (navegadores podem restaurar/ajustar o scrollLeft de elementos
+    // com id em reloads, deixando "Processador OCR" como ponto inicial)
     // -----------------------------------------------------------
     const projectsGrid = document.getElementById('projectsGrid');
-    projectsGrid.addEventListener('wheel', (e) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        projectsGrid.scrollLeft += e.deltaY;
+    const resetProjectsScroll = () => { projectsGrid.scrollLeft = 0; };
+    resetProjectsScroll();
+    window.addEventListener('load', () => requestAnimationFrame(resetProjectsScroll));
+
+    // -----------------------------------------------------------
+    // 4.3 PROJETOS: scroll vertical "pinado" controla o carrossel
+    // horizontal — ao chegar na seção, o scroll para baixo arrasta
+    // os cards para o lado; depois do último card o scroll é liberado.
+    // -----------------------------------------------------------
+    (function setupProjectsPin() {
+      const pin = document.getElementById('projectsPin');
+      const sticky = pin.querySelector('.projects-sticky');
+      const hint = document.getElementById('projectsHint');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion) return;
+
+      let maxTravel = 0;
+      let extraHeight = 0;
+
+      function measure() {
+        const container = projectsGrid.parentElement;
+        const stageWidth = container.offsetWidth;
+        maxTravel = Math.max(0, projectsGrid.scrollWidth - stageWidth);
+
+        if (maxTravel > 0) {
+          extraHeight = maxTravel;
+          pin.classList.add('pin-active');
+          pin.style.height = `${sticky.offsetHeight + extraHeight}px`;
+          if (hint) hint.textContent = t('projects.hintScroll');
+        } else {
+          pin.classList.remove('pin-active');
+          pin.style.height = '';
+          projectsGrid.style.transform = '';
+          if (hint) hint.textContent = t('projects.hintDrag');
+        }
       }
-    });
+
+      function update() {
+        if (maxTravel <= 0) return;
+        const rect = pin.getBoundingClientRect();
+        const progress = Math.min(1, Math.max(0, -rect.top / extraHeight));
+        projectsGrid.style.transform = `translateX(${-progress * maxTravel}px)`;
+      }
+
+      // Adia a 1ª medição: <project-card> só assume seu tamanho final
+      // depois que customElements.define() roda (mais abaixo neste script).
+      requestAnimationFrame(() => {
+        measure();
+        update();
+      });
+
+      // As fontes (Press Start 2P) carregam depois e alteram a largura dos
+      // cards — remede quando estiverem prontas para evitar valores errados.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          measure();
+          update();
+        });
+      }
+
+      window.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          measure();
+          update();
+        }, 200);
+      });
+    })();
 
     // -----------------------------------------------------------
     // 5. SCROLL REVEAL com IntersectionObserver
@@ -111,59 +327,105 @@
         "'": '&#39;',
       }[ch]));
 
-    fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Falha ao buscar repositórios');
-        return res.json();
-      })
-      .then((repos) => {
-        const top = repos
-          .filter((repo) => !repo.fork)
-          .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
-          .slice(0, 6);
+    let githubReposState = { status: 'loading' };
 
-        if (top.length === 0) {
-          githubGrid.innerHTML = '<p class="github-status">Nenhum repositório público encontrado.</p>';
-          return;
-        }
+    // Cache simples em localStorage para evitar repetir a chamada à API
+    // do GitHub a cada carregamento (limite de 60 req/hora sem autenticação)
+    const GITHUB_CACHE_KEY = 'github-repos-cache';
+    const GITHUB_CACHE_TTL = 60 * 60 * 1000; // 1 hora
 
-        githubGrid.innerHTML = '';
+    function renderGithub() {
+      if (githubReposState.status === 'empty') {
+        githubGrid.innerHTML = `<p class="github-status">${escapeHtml(t('github.empty'))}</p>`;
+        return;
+      }
 
-        top.forEach((repo, index) => {
-          const card = document.createElement('a');
-          card.href = repo.html_url;
-          card.target = '_blank';
-          card.rel = 'noopener noreferrer';
-          card.className = `github-card reveal reveal-delay-${(index % 3) + 1}`;
-          card.innerHTML = `
-            <div class="github-card-header">
-              <h3>${escapeHtml(repo.name)}</h3>
-              <span class="tag">${escapeHtml(repo.language || 'Code')}</span>
-            </div>
-            <p>${escapeHtml(repo.description || 'Sem descrição disponível.')}</p>
-            <div class="github-card-meta">
-              <span>
-                <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                ${repo.stargazers_count}
-              </span>
-              <span>
-                <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v6M18 6a9 9 0 0 1-9 9"/></svg>
-                ${repo.forks_count}
-              </span>
-            </div>
-          `;
-          githubGrid.appendChild(card);
-          revealObserver.observe(card);
-        });
-      })
-      .catch(() => {
+      if (githubReposState.status === 'error') {
         githubGrid.innerHTML = `
           <p class="github-status">
-            Não foi possível carregar os repositórios agora. Veja todos no
-            <a href="https://github.com/${GITHUB_USER}?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub</a>.
+            ${escapeHtml(t('github.errorPrefix'))}
+            <a href="https://github.com/${GITHUB_USER}?tab=repositories" target="_blank" rel="noopener noreferrer">${escapeHtml(t('github.errorLink'))}</a>.
           </p>
         `;
+        return;
+      }
+
+      if (githubReposState.status !== 'list') return;
+
+      githubGrid.innerHTML = '';
+
+      githubReposState.data.forEach((repo, index) => {
+        const card = document.createElement('a');
+        card.href = repo.html_url;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+        card.className = `github-card reveal reveal-delay-${(index % 3) + 1}`;
+        card.innerHTML = `
+          <div class="github-card-header">
+            <h3>${escapeHtml(repo.name)}</h3>
+            <span class="tag">${escapeHtml(repo.language || 'Code')}</span>
+          </div>
+          <p>${escapeHtml(repo.description || t('github.noDescription'))}</p>
+          <div class="github-card-meta">
+            <span>
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              ${repo.stargazers_count}
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v6M18 6a9 9 0 0 1-9 9"/></svg>
+              ${repo.forks_count}
+            </span>
+          </div>
+        `;
+        githubGrid.appendChild(card);
+        revealObserver.observe(card);
       });
+    }
+
+    document.addEventListener('languagechange', renderGithub);
+
+    function fetchGithubRepos() {
+      fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Falha ao buscar repositórios');
+          return res.json();
+        })
+        .then((repos) => {
+          const top = repos
+            .filter((repo) => !repo.fork)
+            .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
+            .slice(0, 6);
+
+          githubReposState = top.length === 0 ? { status: 'empty' } : { status: 'list', data: top };
+          renderGithub();
+
+          try {
+            localStorage.setItem(GITHUB_CACHE_KEY, JSON.stringify({ data: top, timestamp: Date.now() }));
+          } catch {
+            // Armazenamento indisponível (modo privado, cota excedida etc.) — sem problema, segue sem cache
+          }
+        })
+        .catch(() => {
+          githubReposState = { status: 'error' };
+          renderGithub();
+        });
+    }
+
+    let usedGithubCache = false;
+    try {
+      const cached = JSON.parse(localStorage.getItem(GITHUB_CACHE_KEY));
+      if (cached && Array.isArray(cached.data) && Date.now() - cached.timestamp < GITHUB_CACHE_TTL) {
+        githubReposState = cached.data.length === 0 ? { status: 'empty' } : { status: 'list', data: cached.data };
+        renderGithub();
+        usedGithubCache = true;
+      }
+    } catch {
+      // Cache corrompido ou indisponível — ignora e busca normalmente
+    }
+
+    if (!usedGithubCache) {
+      fetchGithubRepos();
+    }
 
     // -----------------------------------------------------------
     // 7. EASTER EGG: mini Pong autônomo (4 raquetes) que "destrói"
@@ -583,17 +845,29 @@
       collideBlocks(subtitleGrid, subtitleCell, subtitleRect, '#ffffff');
     }
 
-    // Desenha os blocos "vivos" de uma grade; os destruídos pela bola somem
-    // por completo (o clearRect do início do frame já os deixa transparentes)
+    // Desenha os blocos de uma grade: os "vivos" em opacidade plena e os
+    // destruídos pela bola como um contorno bem fraco, mantendo o texto
+    // original legível mesmo depois de quebrado
     function drawBlocks(grid, cell, rect, color) {
       if (grid.length === 0) return;
       pongCtx.save();
       pongCtx.translate(rect.x, rect.y);
       pongCtx.fillStyle = color;
+
+      pongCtx.globalAlpha = 0.12;
       for (const block of grid) {
-        if (block.destroyed) continue;
-        pongCtx.fillRect(block.x, block.y, cell - 1, cell - 1);
+        if (block.destroyed) {
+          pongCtx.fillRect(block.x, block.y, cell - 1, cell - 1);
+        }
       }
+
+      pongCtx.globalAlpha = 1;
+      for (const block of grid) {
+        if (!block.destroyed) {
+          pongCtx.fillRect(block.x, block.y, cell - 1, cell - 1);
+        }
+      }
+
       pongCtx.restore();
     }
 
@@ -633,47 +907,32 @@
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!prefersReducedMotion) {
-      (function pongLoop() {
+      let pongRafId = null;
+
+      function pongLoop() {
         updatePong();
         collideTitle();
         updateParticles();
         drawPong();
-        requestAnimationFrame(pongLoop);
-      })();
+        pongRafId = requestAnimationFrame(pongLoop);
+      }
+
+      // Pausa o loop do Pong quando o hero sai da viewport, evitando
+      // desenhar no canvas sem necessidade durante a rolagem da página
+      const pongVisibilityObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (pongRafId === null) pongRafId = requestAnimationFrame(pongLoop);
+          } else if (pongRafId !== null) {
+            cancelAnimationFrame(pongRafId);
+            pongRafId = null;
+          }
+        });
+      }, { threshold: 0 });
+      pongVisibilityObserver.observe(heroEl);
     } else {
       drawPong();
     }
-
-    // -----------------------------------------------------------
-    // 8. EASTER EGG: KONAMI CODE — ↑ ↑ ↓ ↓ ← → ← → B A troca o tema
-    //    para "modo arcade" por 10 segundos
-    // -----------------------------------------------------------
-    const KONAMI_CODE = [
-      'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-      'b', 'a',
-    ];
-    let konamiProgress = 0;
-    let konamiTimeout = null;
-
-    window.addEventListener('keydown', (e) => {
-      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-      const expected = KONAMI_CODE[konamiProgress];
-
-      if (key === expected) {
-        konamiProgress += 1;
-        if (konamiProgress === KONAMI_CODE.length) {
-          konamiProgress = 0;
-          document.body.classList.add('konami-mode');
-          clearTimeout(konamiTimeout);
-          konamiTimeout = setTimeout(() => {
-            document.body.classList.remove('konami-mode');
-          }, 10000);
-        }
-      } else {
-        konamiProgress = key === KONAMI_CODE[0] ? 1 : 0;
-      }
-    });
 
     // -----------------------------------------------------------
     // 9. WEB COMPONENT NATIVO: <project-card>
@@ -701,12 +960,12 @@
               display: flex;
               flex: 0 0 clamp(280px, 85vw, 380px);
               scroll-snap-align: start;
-            }
-            :host([featured]) {
-              flex-basis: clamp(280px, 90vw, 540px);
+              perspective: 800px;
             }
             article.project-card {
               width: 100%;
+              transform-style: preserve-3d;
+              will-change: transform;
             }
           </style>
           <article class="project-card${featured ? ' featured' : ''}">
@@ -732,6 +991,27 @@
             detail: { id: caseStudy, title, github },
           }));
         });
+
+        // Tilt 3D sutil, acompanhando a posição do mouse sobre o card
+        const article = shadow.querySelector('article.project-card');
+        const TILT_MAX_DEG = 6;
+        const tiltDisabled = window.matchMedia('(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)');
+
+        this.addEventListener('mousemove', (e) => {
+          if (tiltDisabled.matches) return;
+          const rect = this.getBoundingClientRect();
+          const ratioX = (e.clientX - rect.left) / rect.width;
+          const ratioY = (e.clientY - rect.top) / rect.height;
+          const rotateY = (ratioX - 0.5) * TILT_MAX_DEG * 2;
+          const rotateX = (0.5 - ratioY) * TILT_MAX_DEG * 2;
+          article.style.transition = 'transform 0.1s ease-out';
+          article.style.transform = `translateY(-6px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+        });
+
+        this.addEventListener('mouseleave', () => {
+          article.style.transition = 'transform 0.4s ease';
+          article.style.transform = '';
+        });
       }
     }
 
@@ -749,6 +1029,55 @@
       } else {
         updateFn();
       }
+    }
+
+    // -----------------------------------------------------------
+    // 10.1 FOCUS TRAP — utilitário compartilhado pelos overlays
+    //      modais (Drawer, Terminal, Paleta de Comandos): prende
+    //      o foco com Tab/Shift+Tab enquanto abertos e devolve o
+    //      foco ao elemento que os abriu ao fechar
+    // -----------------------------------------------------------
+    function createFocusTrap(container) {
+      let lastFocused = null;
+
+      function getFocusable() {
+        return Array.from(
+          container.querySelectorAll('a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])')
+        ).filter((el) => !el.disabled && el.offsetParent !== null);
+      }
+
+      function handleKeydown(e) {
+        if (e.key !== 'Tab') return;
+        const focusable = getFocusable();
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+
+      return {
+        activate(focusTarget) {
+          lastFocused = document.activeElement;
+          container.addEventListener('keydown', handleKeydown);
+          const target = focusTarget || getFocusable()[0];
+          if (target) target.focus();
+        },
+        deactivate() {
+          container.removeEventListener('keydown', handleKeydown);
+          if (lastFocused && typeof lastFocused.focus === 'function') {
+            lastFocused.focus();
+          }
+          lastFocused = null;
+        },
+      };
     }
 
     // -----------------------------------------------------------
@@ -926,20 +1255,39 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
     const drawerGithubBtn = document.getElementById('drawerGithubBtn');
     const drawerCloseX = document.getElementById('drawerCloseX');
     const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+    const drawerFocusTrap = createFocusTrap(drawerEl);
 
-    function openDrawer({ id, title, github }) {
+    const CASE_STUDY_TITLE_KEYS = {
+      'torre-de-comando': 'torreDeComando',
+      'painel-monitoramento': 'painelMonitoramento',
+      'processador-ocr': 'processadorOcr',
+      'sistema-cotacao': 'sistemaCotacao',
+    };
+
+    let currentDrawerDetail = null;
+
+    function renderDrawerContent({ id, title, github }) {
       const study = CASE_STUDIES[id];
-      if (!study) return;
+      if (!study) return false;
+
+      const titleKey = CASE_STUDY_TITLE_KEYS[id];
+      const displayTitle = titleKey ? t(`projects.cards.${titleKey}.title`) : title;
 
       drawerBody.innerHTML = `
-        <h3>${escapeHtml(title)}</h3>
+        <h3>${escapeHtml(displayTitle)}</h3>
         <p>${escapeHtml(study.summary)}</p>
-        <span class="drawer-subtitle">// Arquitetura</span>
+        <span class="drawer-subtitle">${escapeHtml(t('drawer.architecture'))}</span>
         <pre class="drawer-diagram"><code>${escapeHtml(study.diagram)}</code></pre>
-        <span class="drawer-subtitle">// Trecho de código</span>
+        <span class="drawer-subtitle">${escapeHtml(t('drawer.codeSnippet'))}</span>
         <pre class="drawer-code"><code>${escapeHtml(study.code)}</code></pre>
       `;
       drawerGithubBtn.href = github || '#';
+      return true;
+    }
+
+    function openDrawer(detail) {
+      if (!renderDrawerContent(detail)) return;
+      currentDrawerDetail = detail;
 
       withViewTransition(() => {
         document.body.classList.add('drawer-open');
@@ -948,9 +1296,13 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         drawerEl.setAttribute('aria-hidden', 'false');
         drawerOverlay.setAttribute('aria-hidden', 'false');
       });
+
+      drawerFocusTrap.activate(drawerCloseX);
     }
 
     function closeDrawer() {
+      currentDrawerDetail = null;
+
       withViewTransition(() => {
         document.body.classList.remove('drawer-open');
         drawerOverlay.classList.remove('visible');
@@ -958,7 +1310,13 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         drawerEl.setAttribute('aria-hidden', 'true');
         drawerOverlay.setAttribute('aria-hidden', 'true');
       });
+
+      drawerFocusTrap.deactivate();
     }
+
+    document.addEventListener('languagechange', () => {
+      if (currentDrawerDetail) renderDrawerContent(currentDrawerDetail);
+    });
 
     document.addEventListener('open-case-study', (e) => openDrawer(e.detail));
     drawerCloseX.addEventListener('click', closeDrawer);
@@ -976,19 +1334,9 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
     const terminalOverlay = document.getElementById('terminalOverlay');
     const terminalOutput = document.getElementById('terminalOutput');
     const terminalInput = document.getElementById('terminalInput');
-
-    const WHOAMI_TEXT = 'Kayque Cavalcanti — Técnico de TI & Estudante de Engenharia de Software.';
+    const terminalFocusTrap = createFocusTrap(terminalOverlay);
 
     const PROJECTS_LS = ['monitoramento/', 'wp_craft/', 'wp_infra/', 'wp_soft/', 'processador-pdfs/'];
-
-    const SOBRE_TXT = [
-      'Foco em fundamentos de baixo nível: C, gestão manual de memória,',
-      'ponteiros e análise de complexidade de algoritmos (notação Big O).',
-      'Esses fundamentos guiam um trabalho orientado a infraestrutura --',
-      'monitoramento de servidores, redes e automação -- sempre buscando',
-      'soluções corretas e eficientes de ponta a ponta, do hardware ao',
-      'código de aplicação.',
-    ];
 
     const PING_HOSTS = {
       'torre-de-comando': '192.168.1.10',
@@ -1021,7 +1369,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
 
     async function pingTarget(target) {
       if (!target) {
-        printLine('uso: ping [alvo]', 'term-muted');
+        printLine(t('terminal.pingUsage'), 'term-muted');
         return;
       }
 
@@ -1049,18 +1397,21 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
       printLine(`    Minimum = ${min}ms, Maximum = ${max}ms, Average = ${Math.round(total / samples)}ms`, 'term-muted');
     }
 
-    const TERMINAL_COMMANDS = {
+    // Object.create(null): sem protótipo herdado, então um comando digitado
+    // como "constructor" ou "__proto__" não resolve para métodos de
+    // Object.prototype (evita TypeError/chamadas silenciosas indevidas)
+    const TERMINAL_COMMANDS = Object.assign(Object.create(null), {
       help() {
-        printLine('Comandos disponíveis:');
+        printLine(t('terminal.helpTitle'));
         printLine('');
         const rows = [
-          ['help', 'lista os comandos disponíveis'],
-          ['whoami', 'exibe um resumo sobre mim'],
-          ['ls', 'lista os diretórios de projetos'],
-          ['cat sobre.txt', 'imprime um resumo técnico sobre mim'],
-          ['ping [alvo]', 'simula um teste de latência de rede'],
-          ['clear', 'limpa a tela do terminal'],
-          ['exit', 'fecha o terminal e volta para a interface'],
+          ['help', t('terminal.help.help')],
+          ['whoami', t('terminal.help.whoami')],
+          ['ls', t('terminal.help.ls')],
+          ['cat sobre.txt', t('terminal.help.cat')],
+          ['ping [alvo]', t('terminal.help.ping')],
+          ['clear', t('terminal.help.clear')],
+          ['exit', t('terminal.help.exit')],
         ];
         const width = Math.max(...rows.map(([cmd]) => cmd.length)) + 4;
         rows.forEach(([cmd, desc]) => {
@@ -1068,18 +1419,18 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         });
       },
       whoami() {
-        printLine(WHOAMI_TEXT);
+        printLine(t('terminal.whoami'));
       },
       ls() {
         printLine(PROJECTS_LS.join('   '));
       },
       cat(args) {
         if (!args[0]) {
-          printLine('uso: cat [arquivo]', 'term-muted');
+          printLine(t('terminal.catUsage'), 'term-muted');
         } else if (args[0] === 'sobre.txt') {
-          SOBRE_TXT.forEach((line) => printLine(line));
+          t('terminal.sobre').forEach((line) => printLine(line));
         } else {
-          printLine(`cat: ${args[0]}: No such file or directory`, 'term-muted');
+          printLine(t('terminal.catNotFound').replace('{0}', args[0]), 'term-muted');
         }
       },
       ping(args) {
@@ -1091,7 +1442,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
       exit() {
         closeTerminal();
       },
-    };
+    });
 
     function runCommand(raw) {
       const trimmed = raw.trim();
@@ -1104,7 +1455,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         if (handler) {
           handler(args);
         } else {
-          printLine(`bash: ${cmd}: command not found`, 'term-muted');
+          printLine(t('terminal.commandNotFound').replace('{0}', cmd), 'term-muted');
         }
       }
 
@@ -1119,13 +1470,13 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
       });
 
       if (!terminalOutput.dataset.welcomed) {
-        printLine('Bem-vindo ao modo terminal.');
-        printLine('Digite "help" para ver os comandos disponíveis.', 'term-muted');
+        printLine(t('terminal.welcome1'));
+        printLine(t('terminal.welcome2'), 'term-muted');
         printLine('');
         terminalOutput.dataset.welcomed = 'true';
       }
 
-      terminalInput.focus();
+      terminalFocusTrap.activate(terminalInput);
     }
 
     function closeTerminal() {
@@ -1134,6 +1485,8 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         terminalOverlay.classList.remove('active');
         terminalOverlay.setAttribute('aria-hidden', 'true');
       });
+
+      terminalFocusTrap.deactivate();
     }
 
     cliToggle.addEventListener('click', openTerminal);
@@ -1243,13 +1596,29 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         customCursorDot.style.top = `${mouseY}px`;
       });
 
-      (function animateCursor() {
+      let cursorRafId = null;
+
+      function animateCursor() {
         ringX += (mouseX - ringX) * 0.18;
         ringY += (mouseY - ringY) * 0.18;
         customCursor.style.left = `${ringX}px`;
         customCursor.style.top = `${ringY}px`;
-        requestAnimationFrame(animateCursor);
-      })();
+        cursorRafId = requestAnimationFrame(animateCursor);
+      }
+
+      cursorRafId = requestAnimationFrame(animateCursor);
+
+      // Pausa o loop do cursor quando a aba fica em segundo plano
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (cursorRafId !== null) {
+            cancelAnimationFrame(cursorRafId);
+            cursorRafId = null;
+          }
+        } else if (cursorRafId === null) {
+          cursorRafId = requestAnimationFrame(animateCursor);
+        }
+      });
 
       const CURSOR_HOVER_SELECTOR = 'a, button, input, .tag, [role="button"]';
 
@@ -1275,6 +1644,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
     const cmdkOverlay = document.getElementById('cmdkOverlay');
     const cmdkInput = document.getElementById('cmdkInput');
     const cmdkList = document.getElementById('cmdkList');
+    const cmdkFocusTrap = createFocusTrap(cmdkOverlay);
 
     function scrollToSection(selector) {
       const target = document.querySelector(selector);
@@ -1282,18 +1652,18 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
     }
 
     const COMMAND_LIST = [
-      { label: 'Início', tag: 'Seção', action: () => scrollToSection('#home') },
-      { label: 'Sobre mim', tag: 'Seção', action: () => scrollToSection('#about') },
-      { label: 'Projetos Recentes', tag: 'Seção', action: () => scrollToSection('#projects') },
-      { label: 'Repositórios no GitHub', tag: 'Seção', action: () => scrollToSection('#github-projects') },
-      { label: 'Máquina de Desenvolvimento', tag: 'Seção', action: () => scrollToSection('#dev-machine') },
-      { label: 'Serviços', tag: 'Seção', action: () => scrollToSection('#services') },
-      { label: 'Changelog', tag: 'Seção', action: () => scrollToSection('#changelog') },
-      { label: 'Contato', tag: 'Seção', action: () => scrollToSection('#contact') },
-      { label: 'Abrir Modo Terminal', tag: 'Ação', action: () => openTerminal() },
-      { label: 'GitHub — KayqueCavalcanti', tag: 'Link', action: () => window.open('https://github.com/KayqueCavalcanti?tab=repositories', '_blank', 'noopener') },
-      { label: 'LinkedIn', tag: 'Link', action: () => window.open('https://www.linkedin.com/in/kayque-cavalcanti-090438350/', '_blank', 'noopener') },
-      { label: 'Baixar Currículo (PDF)', tag: 'Link', action: () => window.open('curriculo-kayque-cavalcanti.pdf', '_blank', 'noopener') },
+      { labelKey: 'cmdk.items.home', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#home') },
+      { labelKey: 'cmdk.items.about', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#about') },
+      { labelKey: 'cmdk.items.projects', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#projects') },
+      { labelKey: 'cmdk.items.githubRepos', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#github-projects') },
+      { labelKey: 'cmdk.items.devMachine', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#dev-machine') },
+      { labelKey: 'cmdk.items.services', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#services') },
+      { labelKey: 'cmdk.items.changelog', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#changelog') },
+      { labelKey: 'cmdk.items.contact', tagKey: 'cmdk.tags.section', action: () => scrollToSection('#contact') },
+      { labelKey: 'cmdk.items.openTerminal', tagKey: 'cmdk.tags.action', action: () => openTerminal() },
+      { labelKey: 'cmdk.items.github', tagKey: 'cmdk.tags.link', action: () => window.open('https://github.com/KayqueCavalcanti?tab=repositories', '_blank', 'noopener') },
+      { labelKey: 'cmdk.items.linkedin', tagKey: 'cmdk.tags.link', action: () => window.open('https://www.linkedin.com/in/kayque-cavalcanti-090438350/', '_blank', 'noopener') },
+      { labelKey: 'cmdk.items.resume', tagKey: 'cmdk.tags.link', action: () => window.open('curriculo-kayque-cavalcanti.pdf', '_blank', 'noopener') },
     ];
 
     let cmdkFiltered = COMMAND_LIST;
@@ -1301,19 +1671,19 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
 
     function renderCommandList() {
       const query = cmdkInput.value.trim().toLowerCase();
-      cmdkFiltered = COMMAND_LIST.filter((cmd) => cmd.label.toLowerCase().includes(query));
+      cmdkFiltered = COMMAND_LIST.filter((cmd) => t(cmd.labelKey).toLowerCase().includes(query));
       cmdkActiveIndex = 0;
 
       if (cmdkFiltered.length === 0) {
-        cmdkList.innerHTML = '<p class="cmdk-empty">Nenhum resultado encontrado.</p>';
+        cmdkList.innerHTML = `<p class="cmdk-empty">${escapeHtml(t('cmdk.empty'))}</p>`;
         return;
       }
 
       cmdkList.innerHTML = cmdkFiltered
         .map((cmd, i) => `
           <div class="cmdk-item${i === 0 ? ' active' : ''}" data-index="${i}">
-            <span>${escapeHtml(cmd.label)}</span>
-            <span class="cmdk-item-tag">${escapeHtml(cmd.tag)}</span>
+            <span>${escapeHtml(t(cmd.labelKey))}</span>
+            <span class="cmdk-item-tag">${escapeHtml(t(cmd.tagKey))}</span>
           </div>
         `)
         .join('');
@@ -1344,7 +1714,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         cmdkOverlay.setAttribute('aria-hidden', 'false');
       });
 
-      cmdkInput.focus();
+      cmdkFocusTrap.activate(cmdkInput);
     }
 
     function closeCommandPalette() {
@@ -1353,7 +1723,13 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         cmdkOverlay.classList.remove('visible');
         cmdkOverlay.setAttribute('aria-hidden', 'true');
       });
+
+      cmdkFocusTrap.deactivate();
     }
+
+    document.addEventListener('languagechange', () => {
+      if (cmdkOverlay.classList.contains('visible')) renderCommandList();
+    });
 
     cmdkHint.addEventListener('click', openCommandPalette);
 
@@ -1407,3 +1783,10 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
         navigator.serviceWorker.register('sw.js').catch(() => {});
       });
     }
+
+    // -----------------------------------------------------------
+    // 18. Aplica o idioma salvo (ou o padrão pt-BR) a toda a página,
+    //     agora que todo o conteúdo estático e os Web Components
+    //     já foram montados
+    // -----------------------------------------------------------
+    applyTranslations(currentLang);

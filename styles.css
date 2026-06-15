@@ -31,17 +31,6 @@
     }
 
     /* =========================================================
-       EASTER EGG: KONAMI CODE — ↑ ↑ ↓ ↓ ← → ← → B A (ver script.js)
-       Por 10s, o destaque vira verde "arcade" e o corpo do texto
-       muda para a fonte pixelada
-       ========================================================= */
-    body.konami-mode {
-      --color-accent: #39ff14;
-      --font-body: 'Press Start 2P', monospace;
-      transition: color 0.3s ease;
-    }
-
-    /* =========================================================
        RESET / BASE
        ========================================================= */
     * {
@@ -60,6 +49,7 @@
       font-family: var(--font-body);
       line-height: 1.6;
       overflow-x: hidden;
+      overflow-wrap: break-word;
     }
 
     img {
@@ -225,6 +215,13 @@
       transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
     }
 
+    /* Estado "rolado": aplicado via JS (classList.toggle) ao passar de 40px de scroll */
+    .navbar.scrolled {
+      background: rgba(10, 10, 12, 0.8);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
     .nav-container {
       height: 100%;
       display: flex;
@@ -301,6 +298,25 @@
       transition: var(--transition);
     }
     .cli-toggle:hover {
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+      box-shadow: 0 0 14px rgba(255, 184, 0, 0.25);
+    }
+
+    /* Botão de troca de idioma PT/EN */
+    .lang-toggle {
+      font-family: var(--font-pixel);
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 0.55rem 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-toggle:hover {
       color: var(--color-accent);
       border-color: var(--color-accent);
       box-shadow: 0 0 14px rgba(255, 184, 0, 0.25);
@@ -497,7 +513,7 @@
     .marquee-track {
       display: flex;
       width: max-content;
-      animation: marquee-scroll 32s linear infinite;
+      animation: marquee-scroll 48s linear infinite;
     }
 
     .marquee-track:hover {
@@ -706,6 +722,31 @@
       margin-bottom: 2rem;
     }
 
+    /* Wrapper "pinado": JS define a altura extra para travar o scroll
+       vertical enquanto o carrossel de projetos é percorrido. */
+    .projects-pin {
+      position: relative;
+    }
+
+    .projects-sticky {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .projects-pin.pin-active .projects-sticky {
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .projects-pin.pin-active .projects-grid {
+      overflow: visible;
+      scroll-snap-type: none;
+      width: max-content;
+    }
+
     /* Galeria de projetos em scroll horizontal */
     .projects-grid {
       display: flex;
@@ -717,6 +758,13 @@
       margin: 0 -1.5rem;
       padding-left: 1.5rem;
       padding-right: 1.5rem;
+      /* overflow-x: auto força overflow-y a virar "auto" também, então
+         reservamos espaço no topo para o glow/elevação do hover não ser cortado. */
+      padding-top: 2.5rem;
+      margin-top: -2.5rem;
+      /* Evita que o navegador reposicione o scroll horizontal automaticamente
+         (scroll anchoring) quando o layout dos cards muda no carregamento. */
+      overflow-anchor: none;
     }
 
     .projects-grid::-webkit-scrollbar {
@@ -730,15 +778,6 @@
     .project-card {
       flex: 0 0 clamp(280px, 85vw, 380px);
       scroll-snap-align: start;
-    }
-
-    /* Card em destaque é mais largo */
-    .project-card.featured {
-      flex-basis: clamp(280px, 90vw, 540px);
-    }
-
-    .project-card.coming-soon {
-      flex-basis: clamp(260px, 70vw, 320px);
     }
 
     /* Card com borda em gradiente (glow on hover) via wrapper + inner */
@@ -1226,7 +1265,7 @@
       -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
     }
     .footer-marquee .marquee-track {
-      animation: marquee-scroll 28s linear infinite;
+      animation: marquee-scroll 42s linear infinite;
     }
     .footer-marquee .marquee-item {
       font-family: var(--font-display);
@@ -1771,6 +1810,62 @@
       }
     }
 
+    /* Widget "Agora" — o que está em construção/estudo no momento */
+    .now-panel {
+      margin-top: 1.5rem;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .now-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6em;
+      margin-bottom: 0.75rem;
+    }
+    .now-header .pulse-dot {
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--color-accent);
+      animation: pulse-dot 2s infinite;
+    }
+    .now-label {
+      font-family: var(--font-pixel);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--color-accent);
+      text-transform: uppercase;
+    }
+    .now-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--color-text);
+      margin-bottom: 1.25rem;
+    }
+    .now-list {
+      display: grid;
+      gap: 0.85rem;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .now-list li {
+      position: relative;
+      padding-left: 1.4rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+    .now-list li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--color-accent);
+      font-family: var(--font-pixel);
+    }
+
     /* =========================================================
        PALETA DE COMANDOS (CTRL+K) — busca rápida estilo
        VS Code/Spotlight, com navegação por seções e ações
@@ -2074,6 +2169,10 @@
         display: flex;
       }
       .cli-toggle {
+        font-size: 0.7rem;
+        padding: 0.75rem 1.25rem;
+      }
+      .lang-toggle {
         font-size: 0.7rem;
         padding: 0.75rem 1.25rem;
       }

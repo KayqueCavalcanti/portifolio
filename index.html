@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kayque Cavalcanti da Silva | Portfólio</title>
+  <title data-i18n="meta.title">Kayque Cavalcanti da Silva | Portfólio</title>
   <meta name="description" content="Portfólio de Kayque Cavalcanti da Silva — Técnico de TI & Estudante de Engenharia de Software." />
   <link rel="canonical" href="https://kayquecavalcanti.github.io/portifolio/" />
 
@@ -46,12 +46,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
 
+  <!-- Adianta a conexão com a API do GitHub usada na seção "Mais projetos" -->
+  <link rel="preconnect" href="https://api.github.com" />
+  <link rel="dns-prefetch" href="https://api.github.com" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
   <!-- Acessibilidade: link para pular direto ao conteúdo -->
-  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+  <a href="#main-content" class="skip-link" data-i18n="skipLink">Pular para o conteúdo principal</a>
 
   <!-- ============================ BOOT SEQUENCE ============================ -->
   <div class="boot-screen" id="bootScreen" aria-hidden="true">
@@ -71,15 +75,16 @@
       <a href="#home" class="logo">KC<span class="dot">.</span>dev</a>
 
       <ul class="nav-links" id="navLinks">
-        <li><a href="#home" class="nav-link">Início</a></li>
-        <li><a href="#about" class="nav-link">Sobre</a></li>
-        <li><a href="#projects" class="nav-link">Projetos</a></li>
-        <li><a href="#services" class="nav-link">Serviços</a></li>
-        <li><a href="#contact" class="nav-link nav-cta">Contato</a></li>
+        <li><a href="#home" class="nav-link" data-i18n="nav.home">Início</a></li>
+        <li><a href="#about" class="nav-link" data-i18n="nav.about">Sobre</a></li>
+        <li><a href="#projects" class="nav-link" data-i18n="nav.projects">Projetos</a></li>
+        <li><a href="#services" class="nav-link" data-i18n="nav.services">Serviços</a></li>
+        <li><a href="#contact" class="nav-link nav-cta" data-i18n="nav.contact">Contato</a></li>
         <li><button class="cli-toggle" id="cliToggle" type="button">[ &gt;_ CLI ]</button></li>
+        <li><button class="lang-toggle" id="langToggle" type="button">EN</button></li>
       </ul>
 
-      <button class="nav-toggle" id="navToggle" aria-label="Abrir menu">
+      <button class="nav-toggle" id="navToggle" data-i18n-attr-aria-label="nav.openMenu" aria-label="Abrir menu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -105,11 +110,11 @@
       <div class="marquee-group">
         <span class="marquee-item">C</span><span class="marquee-sep">•</span>
         <span class="marquee-item">Python</span><span class="marquee-sep">•</span>
-        <span class="marquee-item">Lógica de Programação</span><span class="marquee-sep">•</span>
-        <span class="marquee-item">Estruturas de Dados</span><span class="marquee-sep">•</span>
+        <span class="marquee-item" data-i18n="marquee.logic">Lógica de Programação</span><span class="marquee-sep">•</span>
+        <span class="marquee-item" data-i18n="marquee.dataStructures">Estruturas de Dados</span><span class="marquee-sep">•</span>
         <span class="marquee-item">Flask</span><span class="marquee-sep">•</span>
         <span class="marquee-item">SQLite</span><span class="marquee-sep">•</span>
-        <span class="marquee-item">Redes</span><span class="marquee-sep">•</span>
+        <span class="marquee-item" data-i18n="marquee.networks">Redes</span><span class="marquee-sep">•</span>
         <span class="marquee-item">Hardware</span><span class="marquee-sep">•</span>
       </div>
     </div>
@@ -119,24 +124,24 @@
   <section class="about" id="about">
     <div class="container about-grid">
       <div class="about-image reveal">
-        <img src="perfil.jpg" alt="Foto de perfil de Kayque Cavalcanti da Silva" />
+        <img src="perfil.jpg" alt="Foto de perfil de Kayque Cavalcanti da Silva" width="687" height="955" loading="lazy" decoding="async" />
         <div class="availability-badge">
           <span class="pulse-dot"></span>
-          Disponível para novos projetos
+          <span data-i18n="about.badge">Disponível para novos projetos</span>
         </div>
       </div>
 
       <div class="about-content reveal">
-        <span class="section-label">// Sobre mim</span>
-        <h2 class="about-title">Código que pensa.<br />Infraestrutura que resolve.</h2>
-        <p class="about-text">
+        <span class="section-label" data-i18n="about.label">// Sobre mim</span>
+        <h2 class="about-title" data-i18n-html="about.title">Código que pensa.<br />Infraestrutura que resolve.</h2>
+        <p class="about-text" data-i18n-html="about.p1">
           Tudo começou com uma pergunta de jogador: <strong>"o que está rodando por trás da tela?"</strong>.
           Essa curiosidade me levou direto para dentro da máquina — para C, gerenciamento de memória,
           complexidade de algoritmos (Big O) e as estruturas de dados que sustentam qualquer sistema,
           as mesmas que sustentam a engine, a física e as regras de um jogo, muito antes de me
           preocupar com o que aparece na tela.
         </p>
-        <p class="about-text">
+        <p class="about-text" data-i18n-html="about.p2">
           Hoje, como <strong>Técnico de TI</strong> e estudante de <strong>Engenharia de Software</strong>,
           uso essa base para construir coisas que funcionam de ponta a ponta: do cabo de rede ao
           código, da infraestrutura ao painel que mostra os resultados. Gosto de pegar um problema
@@ -148,29 +153,29 @@
           <div class="focus-item">
             <span class="focus-icon">0x01</span>
             <div>
-              <h4>Fundamentos</h4>
-              <p>C, lógica e estruturas de dados como base de tudo.</p>
+              <h4 data-i18n="about.focus.f1Title">Fundamentos</h4>
+              <p data-i18n="about.focus.f1Text">C, lógica e estruturas de dados como base de tudo.</p>
             </div>
           </div>
           <div class="focus-item">
             <span class="focus-icon">0x02</span>
             <div>
-              <h4>Desenvolvimento</h4>
-              <p>Python, Flask, FastAPI e SQLite em soluções funcionais.</p>
+              <h4 data-i18n="about.focus.f2Title">Desenvolvimento</h4>
+              <p data-i18n="about.focus.f2Text">Python, Flask, FastAPI e SQLite em soluções funcionais.</p>
             </div>
           </div>
           <div class="focus-item">
             <span class="focus-icon">0x03</span>
             <div>
-              <h4>Infraestrutura</h4>
-              <p>Redes, hardware e monitoramento na prática.</p>
+              <h4 data-i18n="about.focus.f3Title">Infraestrutura</h4>
+              <p data-i18n="about.focus.f3Text">Redes, hardware e monitoramento na prática.</p>
             </div>
           </div>
           <div class="focus-item">
             <span class="focus-icon">0x04</span>
             <div>
-              <h4>Mentalidade</h4>
-              <p>Aprender construindo e resolver problemas reais.</p>
+              <h4 data-i18n="about.focus.f4Title">Mentalidade</h4>
+              <p data-i18n="about.focus.f4Text">Aprender construindo e resolver problemas reais.</p>
             </div>
           </div>
         </div>
@@ -180,10 +185,12 @@
 
   <!-- ============================ PROJETOS ============================ -->
   <section class="projects" id="projects">
+   <div class="projects-pin" id="projectsPin">
+    <div class="projects-sticky">
     <div class="container">
-      <span class="section-label reveal">// Projetos</span>
-      <h2 class="section-title reveal">Projetos Recentes</h2>
-      <p class="scroll-hint reveal">Arraste para o lado →</p>
+      <span class="section-label reveal" data-i18n="projects.label">// Projetos</span>
+      <h2 class="section-title reveal" data-i18n="projects.title">Projetos Recentes</h2>
+      <p class="scroll-hint reveal" id="projectsHint" data-i18n="projects.hintDrag">Arraste para o lado →</p>
 
       <div class="projects-grid" id="projectsGrid">
 
@@ -193,10 +200,11 @@
           featured
           number="LVL. 01"
           title="Torre de Comando"
+          data-i18n-title="projects.cards.torreDeComando.title"
           github="https://github.com/KayqueCavalcanti/command-tower"
           case-study="torre-de-comando"
         >
-          <p slot="description">
+          <p slot="description" data-i18n="projects.cards.torreDeComando.description">
             Dashboard de monitoramento e auditoria de ferramentas DevOps (GitLab, Nexus, UrbanCode, Apptio)
             em Python/Flask, aplicando Clean Code, Design Patterns (Strategy, Factory, Singleton) e SOLID.
             Inclui histórico em SQLite, alertas via Slack, testes unitários e pipeline de CI/CD no GitLab.
@@ -212,10 +220,11 @@
           class="reveal reveal-delay-1"
           number="LVL. 02"
           title="Painel de Monitoramento"
+          data-i18n-title="projects.cards.painelMonitoramento.title"
           github="https://github.com/KayqueCavalcanti/dashboard-interativo"
           case-study="painel-monitoramento"
         >
-          <p slot="description">
+          <p slot="description" data-i18n="projects.cards.painelMonitoramento.description">
             Dashboard de monitoramento de sistemas em tempo real, com telemetria via WebSocket
             de CPU, RAM, disco, rede e processos, gráficos reativos, histórico persistido em
             SQLite e alertas de limite configuráveis.
@@ -231,10 +240,11 @@
           class="reveal reveal-delay-2"
           number="LVL. 03"
           title="Processador OCR de PDF"
+          data-i18n-title="projects.cards.processadorOcr.title"
           github="https://github.com/KayqueCavalcanti/processador-pdfs"
           case-study="processador-ocr"
         >
-          <p slot="description">
+          <p slot="description" data-i18n="projects.cards.processadorOcr.description">
             API REST em FastAPI que recebe uploads de PDF e enfileira o processamento com
             RabbitMQ (DLQ + retry com backoff exponencial), extraindo texto via parsing nativo
             com fallback de OCR (Tesseract) para documentos digitalizados, com persistência em
@@ -251,10 +261,11 @@
           class="reveal"
           number="LVL. 04"
           title="Sistema de Cotação"
+          data-i18n-title="projects.cards.sistemaCotacao.title"
           github="https://github.com/KayqueCavalcanti/quotation-system"
           case-study="sistema-cotacao"
         >
-          <p slot="description">
+          <p slot="description" data-i18n="projects.cards.sistemaCotacao.description">
             Sistema de orçamento e cotação com backend em FastAPI e frontend em HTML, CSS e
             JavaScript, automatizando o fluxo entre solicitação e proposta.
           </p>
@@ -267,26 +278,28 @@
         <article class="project-card coming-soon reveal reveal-delay-1">
           <div class="card-inner">
             <span class="coming-soon-icon">_</span>
-            <h3>Próximo Projeto</h3>
-            <p>Algo novo está sendo compilado. Em construção.</p>
+            <h3 data-i18n="projects.comingSoon.title">Próximo Projeto</h3>
+            <p data-i18n="projects.comingSoon.text">Algo novo está sendo compilado. Em construção.</p>
           </div>
         </article>
 
       </div>
     </div>
+    </div>
+   </div>
   </section>
 
   <!-- ============================ MAIS PROJETOS (GITHUB) ============================ -->
   <section class="github-projects" id="github-projects">
     <div class="container">
-      <span class="section-label reveal">// Mais Projetos</span>
-      <h2 class="section-title reveal">Repositórios no GitHub</h2>
-      <p class="section-intro reveal">
+      <span class="section-label reveal" data-i18n="github.label">// Mais Projetos</span>
+      <h2 class="section-title reveal" data-i18n="github.title">Repositórios no GitHub</h2>
+      <p class="section-intro reveal" data-i18n="github.intro">
         Alguns dos meus repositórios públicos, carregados automaticamente em tempo real via API do GitHub.
       </p>
 
       <div class="github-grid" id="githubGrid">
-        <p class="github-status">Carregando repositórios...</p>
+        <p class="github-status" data-i18n="github.loading">Carregando repositórios...</p>
       </div>
     </div>
   </section>
@@ -294,52 +307,52 @@
   <!-- ============================ MÁQUINA DE DESENVOLVIMENTO ============================ -->
   <section class="dev-machine" id="dev-machine">
     <div class="container">
-      <span class="section-label reveal">// Setup</span>
-      <h2 class="section-title reveal">Máquina de Desenvolvimento</h2>
-      <p class="section-intro reveal">
+      <span class="section-label reveal" data-i18n="devMachine.label">// Setup</span>
+      <h2 class="section-title reveal" data-i18n="devMachine.title">Máquina de Desenvolvimento</h2>
+      <p class="section-intro reveal" data-i18n="devMachine.intro">
         As ferramentas que uso no dia a dia para programar, testar e colocar projetos no ar.
       </p>
 
       <div class="tools-grid">
         <div class="tool-card reveal">
           <span class="tool-icon">VSC</span>
-          <h4>VS Code</h4>
-          <p>Editor principal</p>
+          <h4 data-i18n="devMachine.tools.vscodeTitle">VS Code</h4>
+          <p data-i18n="devMachine.tools.vscodeDesc">Editor principal</p>
         </div>
         <div class="tool-card reveal reveal-delay-1">
           <span class="tool-icon">WIN</span>
-          <h4>Windows 11</h4>
-          <p>Sistema operacional</p>
+          <h4 data-i18n="devMachine.tools.windowsTitle">Windows 11</h4>
+          <p data-i18n="devMachine.tools.windowsDesc">Sistema operacional</p>
         </div>
         <div class="tool-card reveal reveal-delay-2">
           <span class="tool-icon">GIT</span>
-          <h4>Git &amp; GitHub</h4>
-          <p>Controle de versão</p>
+          <h4 data-i18n-html="devMachine.tools.gitTitle">Git &amp; GitHub</h4>
+          <p data-i18n="devMachine.tools.gitDesc">Controle de versão</p>
         </div>
         <div class="tool-card reveal reveal-delay-3">
           <span class="tool-icon">_$</span>
-          <h4>PowerShell / Bash</h4>
-          <p>Terminal do dia a dia</p>
+          <h4 data-i18n="devMachine.tools.shellTitle">PowerShell / Bash</h4>
+          <p data-i18n="devMachine.tools.shellDesc">Terminal do dia a dia</p>
         </div>
         <div class="tool-card reveal">
           <span class="tool-icon">PY</span>
-          <h4>Python</h4>
-          <p>Scripts e back-end</p>
+          <h4 data-i18n="devMachine.tools.pythonTitle">Python</h4>
+          <p data-i18n="devMachine.tools.pythonDesc">Scripts e back-end</p>
         </div>
         <div class="tool-card reveal reveal-delay-1">
           <span class="tool-icon">C</span>
-          <h4>C / GCC</h4>
-          <p>Fundamentos de baixo nível</p>
+          <h4 data-i18n="devMachine.tools.cTitle">C / GCC</h4>
+          <p data-i18n="devMachine.tools.cDesc">Fundamentos de baixo nível</p>
         </div>
         <div class="tool-card reveal reveal-delay-2">
           <span class="tool-icon">API</span>
-          <h4>Flask / FastAPI</h4>
-          <p>APIs e back-end web</p>
+          <h4 data-i18n="devMachine.tools.apiTitle">Flask / FastAPI</h4>
+          <p data-i18n="devMachine.tools.apiDesc">APIs e back-end web</p>
         </div>
         <div class="tool-card reveal reveal-delay-3">
           <span class="tool-icon">DB</span>
-          <h4>SQLite</h4>
-          <p>Banco de dados leve</p>
+          <h4 data-i18n="devMachine.tools.dbTitle">SQLite</h4>
+          <p data-i18n="devMachine.tools.dbDesc">Banco de dados leve</p>
         </div>
       </div>
 
@@ -359,12 +372,12 @@
             <span class="spec-value">75%</span>
           </div>
           <div class="spec-row">
-            <span class="spec-label">Estruturas de Dados</span>
+            <span class="spec-label" data-i18n-html="devMachine.specs.dataStructures">Estruturas de Dados</span>
             <span class="spec-bar"><span class="spec-fill" style="--target-width: 80%"></span></span>
             <span class="spec-value">80%</span>
           </div>
           <div class="spec-row">
-            <span class="spec-label">Redes &amp; Infra</span>
+            <span class="spec-label" data-i18n-html="devMachine.specs.networksInfra">Redes &amp; Infra</span>
             <span class="spec-bar"><span class="spec-fill" style="--target-width: 78%"></span></span>
             <span class="spec-value">78%</span>
           </div>
@@ -380,6 +393,19 @@
           </div>
         </div>
       </div>
+
+      <div class="now-panel reveal">
+        <div class="now-header">
+          <span class="pulse-dot"></span>
+          <span class="now-label" data-i18n="now.label">// Agora</span>
+        </div>
+        <h3 class="now-title" data-i18n="now.title">O que estou construindo agora</h3>
+        <ul class="now-list">
+          <li data-i18n="now.item1">Aprofundando Estruturas de Dados e Algoritmos (notação Big O) na faculdade de Engenharia de Software.</li>
+          <li data-i18n="now.item2">Construindo uma nova ferramenta de automação para monitoramento de redes em Python.</li>
+          <li data-i18n="now.item3">Estudando Docker e pipelines de CI/CD para evoluir os projetos atuais.</li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -390,15 +416,15 @@
       <p class="quote-text reveal">
         Talk is cheap. <span class="quote-highlight">Show me the code.</span>
       </p>
-      <p class="quote-author reveal">— Linus Torvalds, <span>criador do Linux e do Git</span></p>
+      <p class="quote-author reveal" data-i18n-html="quote.author">— Linus Torvalds, <span>criador do Linux e do Git</span></p>
     </div>
   </section>
 
   <!-- ============================ SERVIÇOS ============================ -->
   <section class="services" id="services">
     <div class="container">
-      <span class="section-label reveal">// Serviços</span>
-      <h2 class="section-title reveal">Como posso ajudar</h2>
+      <span class="section-label reveal" data-i18n="services.label">// Serviços</span>
+      <h2 class="section-title reveal" data-i18n="services.title">Como posso ajudar</h2>
 
       <div class="services-grid">
 
@@ -407,15 +433,15 @@
           <div class="service-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="8" y1="22" x2="16" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
           </div>
-          <h3>Web &amp; Interfaces</h3>
-          <p>Sites, painéis e interfaces rápidas, responsivas e bem estruturadas.</p>
+          <h3 data-i18n-html="services.card1.title">Web &amp; Interfaces</h3>
+          <p data-i18n="services.card1.desc">Sites, painéis e interfaces rápidas, responsivas e bem estruturadas.</p>
           <ul class="service-list">
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Layout responsivo (mobile-first)</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Painéis e dashboards dinâmicos</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Integração com back-end (Flask)</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Performance e boas práticas</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card1.item1">Layout responsivo (mobile-first)</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card1.item2">Painéis e dashboards dinâmicos</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card1.item3">Integração com back-end (Flask)</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card1.item4">Performance e boas práticas</span></li>
           </ul>
-          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e tenho um projeto de site/interface. Podemos conversar sobre um orçamento?">Solicitar Orçamento</a>
+          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e tenho um projeto de site/interface. Podemos conversar sobre um orçamento?" data-i18n="services.requestQuote">Solicitar Orçamento</a>
         </div>
 
         <!-- Serviço 2 -->
@@ -423,15 +449,15 @@
           <div class="service-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="6" rx="1"/><rect x="2" y="9" width="20" height="6" rx="1"/><rect x="2" y="16" width="20" height="6" rx="1"/><circle cx="6" cy="5" r="0.5"/><circle cx="6" cy="12" r="0.5"/><circle cx="6" cy="19" r="0.5"/></svg>
           </div>
-          <h3>Infraestrutura &amp; Redes</h3>
-          <p>Configuração, organização e monitoramento de redes e servidores.</p>
+          <h3 data-i18n-html="services.card2.title">Infraestrutura &amp; Redes</h3>
+          <p data-i18n="services.card2.desc">Configuração, organização e monitoramento de redes e servidores.</p>
           <ul class="service-list">
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Monitoramento de uptime</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Configuração de redes locais</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Manutenção de hardware</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Diagnóstico e suporte técnico</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card2.item1">Monitoramento de uptime</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card2.item2">Configuração de redes locais</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card2.item3">Manutenção de hardware</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card2.item4">Diagnóstico e suporte técnico</span></li>
           </ul>
-          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e preciso de ajuda com infraestrutura/redes. Podemos conversar?">Solicitar Orçamento</a>
+          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e preciso de ajuda com infraestrutura/redes. Podemos conversar?" data-i18n="services.requestQuote">Solicitar Orçamento</a>
         </div>
 
         <!-- Serviço 3 -->
@@ -439,15 +465,15 @@
           <div class="service-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
           </div>
-          <h3>Software &amp; Automação</h3>
-          <p>Scripts, ferramentas e sistemas que automatizam tarefas repetitivas.</p>
+          <h3 data-i18n-html="services.card3.title">Software &amp; Automação</h3>
+          <p data-i18n="services.card3.desc">Scripts, ferramentas e sistemas que automatizam tarefas repetitivas.</p>
           <ul class="service-list">
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Automação de processos</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Scripts em Python/C</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Integração com bancos de dados</li>
-            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> Lógica sob medida</li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card3.item1">Automação de processos</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card3.item2">Scripts em Python/C</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card3.item3">Integração com bancos de dados</span></li>
+            <li><svg class="check-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/><path d="M7 12.5l3 3 7-7"/></svg> <span data-i18n="services.card3.item4">Lógica sob medida</span></li>
           </ul>
-          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e tenho uma ideia de automação/software. Podemos conversar sobre um orçamento?">Solicitar Orçamento</a>
+          <a href="#" class="btn btn-primary btn-block wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e tenho uma ideia de automação/software. Podemos conversar sobre um orçamento?" data-i18n="services.requestQuote">Solicitar Orçamento</a>
         </div>
 
       </div>
@@ -457,9 +483,9 @@
   <!-- ============================ SYSTEM LOG (CHANGELOG) ============================ -->
   <section class="changelog" id="changelog">
     <div class="container">
-      <span class="section-label reveal">// System Log</span>
-      <h2 class="section-title reveal">Changelog</h2>
-      <p class="section-intro reveal">Histórico de versões deste portfólio — direto do log de commits.</p>
+      <span class="section-label reveal" data-i18n="changelog.label">// System Log</span>
+      <h2 class="section-title reveal" data-i18n="changelog.title">Changelog</h2>
+      <p class="section-intro reveal" data-i18n="changelog.intro">Histórico de versões deste portfólio — direto do log de commits.</p>
 
       <pre class="changelog-log reveal"><code><span class="log-entry"><span class="log-head">HEAD -&gt; main</span> <span class="log-tag">v1.3.0</span>
   feat: Web Components, View Transitions, Drawers de arquitetura, Modo Terminal,
@@ -483,72 +509,72 @@
     <div class="footer-marquee">
       <div class="marquee-track" id="footerMarqueeTrack">
         <div class="marquee-group">
-          <span class="marquee-item">Disponível para novos projetos</span><span class="marquee-sep">•</span>
-          <span class="marquee-item">Vamos construir algo</span><span class="marquee-sep">•</span>
-          <span class="marquee-item">Código • Redes • Infraestrutura</span><span class="marquee-sep">•</span>
-          <span class="marquee-item">Aberto a freelas e parcerias</span><span class="marquee-sep">•</span>
+          <span class="marquee-item" data-i18n="footer.marquee1">Disponível para novos projetos</span><span class="marquee-sep">•</span>
+          <span class="marquee-item" data-i18n="footer.marquee2">Vamos construir algo</span><span class="marquee-sep">•</span>
+          <span class="marquee-item" data-i18n="footer.marquee3">Código • Redes • Infraestrutura</span><span class="marquee-sep">•</span>
+          <span class="marquee-item" data-i18n="footer.marquee4">Aberto a freelas e parcerias</span><span class="marquee-sep">•</span>
         </div>
       </div>
     </div>
 
     <div class="footer-content reveal">
-      <span class="section-label">// Contato</span>
-      <h2 class="footer-title">Entre em contato?</h2>
-      <p class="footer-text">Aberto a oportunidades, projetos e parcerias. Vamos conversar.</p>
+      <span class="section-label" data-i18n="footer.label">// Contato</span>
+      <h2 class="footer-title" data-i18n="footer.title">Entre em contato?</h2>
+      <p class="footer-text" data-i18n="footer.text">Aberto a oportunidades, projetos e parcerias. Vamos conversar.</p>
 
       <div class="footer-links">
         <a href="https://github.com/KayqueCavalcanti?tab=repositories" target="_blank" rel="noopener noreferrer" class="oval-link">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.34-1.11.62-1.36-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.31.1-2.72 0 0 .84-.27 2.75 1.05a9.4 9.4 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.94-2.34 4.81-4.57 5.06.36.32.67.94.67 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
-          GitHub
+          <span data-i18n="footer.links.github">GitHub</span>
         </a>
         <a href="https://www.linkedin.com/in/kayque-cavalcanti-090438350/" target="_blank" rel="noopener noreferrer" class="oval-link">
           <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
+          <span data-i18n="footer.links.linkedin">LinkedIn</span>
         </a>
         <a href="mailto:kayque.silva969@gmail.com" class="oval-link">
           <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
-          E-mail
+          <span data-i18n="footer.links.email">E-mail</span>
         </a>
         <a href="curriculo-kayque-cavalcanti.pdf" download class="oval-link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 10 12 15 17 10"/><path d="M5 21h14"/></svg>
-          Currículo
+          <span data-i18n="footer.links.resume">Currículo</span>
         </a>
         <a href="#" class="oval-link wa-btn" target="_blank" rel="noopener noreferrer" data-message="Olá! Vi seu portfólio e gostaria de conversar sobre um projeto.">
           <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          WhatsApp
+          <span data-i18n="footer.links.whatsapp">WhatsApp</span>
         </a>
       </div>
 
-      <p class="footer-copy">© 2026 Kayque Cavalcanti da Silva. Todos os direitos reservados.</p>
+      <p class="footer-copy" data-i18n="footer.copy">© 2026 Kayque Cavalcanti da Silva. Todos os direitos reservados.</p>
     </div>
   </footer>
 
   <!-- ============================ DRAWER: ESTUDO DE CASO ============================ -->
   <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
-  <aside class="drawer" id="drawer" aria-hidden="true">
+  <aside class="drawer" id="drawer" aria-hidden="true" role="dialog" aria-modal="true" data-i18n-attr-aria-label="drawer.ariaLabel" aria-label="Estudo de caso">
     <div class="drawer-header">
-      <span class="section-label">// Estudo de caso</span>
-      <button class="drawer-close" id="drawerCloseX" aria-label="Fechar estudo de caso">×</button>
+      <span class="section-label" data-i18n="drawer.label">// Estudo de caso</span>
+      <button class="drawer-close" id="drawerCloseX" data-i18n-attr-aria-label="drawer.closeAria" aria-label="Fechar estudo de caso">×</button>
     </div>
     <div class="drawer-body" id="drawerBody">
       <!-- Conteúdo injetado dinamicamente via script.js -->
     </div>
     <div class="drawer-footer">
-      <button class="btn btn-outline" id="drawerCloseBtn" type="button">Fechar</button>
+      <button class="btn btn-outline" id="drawerCloseBtn" type="button" data-i18n="drawer.closeBtn">Fechar</button>
       <a class="btn btn-primary" id="drawerGithubBtn" href="#" target="_blank" rel="noopener noreferrer">
-        Ver no GitHub
+        <span data-i18n="drawer.viewGithub">Ver no GitHub</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
       </a>
     </div>
   </aside>
 
   <!-- ============================ MODO TERMINAL ============================ -->
-  <div class="terminal-overlay" id="terminalOverlay" aria-hidden="true">
+  <div class="terminal-overlay" id="terminalOverlay" aria-hidden="true" role="dialog" aria-modal="true" data-i18n-attr-aria-label="terminal.ariaLabel" aria-label="Modo terminal">
     <div class="terminal-window">
-      <div class="terminal-output" id="terminalOutput"></div>
+      <div class="terminal-output" id="terminalOutput" role="log" aria-live="polite" aria-atomic="false"></div>
       <div class="terminal-input-line">
         <span class="terminal-prompt">guest@kayque-portfolio:~$</span>
-        <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Comando do terminal" />
+        <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-attr-aria-label="terminal.inputAriaLabel" aria-label="Comando do terminal" />
       </div>
     </div>
   </div>
@@ -565,9 +591,9 @@
 
   <!-- ============================ PALETA DE COMANDOS (CTRL+K) ============================ -->
   <button class="cmdk-hint" id="cmdkHint" type="button">
-    <kbd>Ctrl</kbd>+<kbd>K</kbd> Busca rápida
+    <kbd>Ctrl</kbd>+<kbd>K</kbd> <span data-i18n="cmdk.hintLabel">Busca rápida</span>
   </button>
-  <div class="cmdk-overlay" id="cmdkOverlay" aria-hidden="true">
+  <div class="cmdk-overlay" id="cmdkOverlay" aria-hidden="true" role="dialog" aria-modal="true" data-i18n-attr-aria-label="cmdk.ariaLabel" aria-label="Paleta de comandos">
     <div class="cmdk-panel">
       <div class="cmdk-input-wrap">
         <span aria-hidden="true">&gt;</span>
@@ -579,6 +605,8 @@
           autocomplete="off"
           autocapitalize="off"
           spellcheck="false"
+          data-i18n-attr-placeholder="cmdk.placeholder"
+          data-i18n-attr-aria-label="cmdk.ariaLabel"
           aria-label="Busca rápida"
         />
       </div>
@@ -587,6 +615,7 @@
   </div>
 
   <!-- ============================ JAVASCRIPT ============================ -->
+  <script src="translations.js"></script>
   <script src="script.js"></script>
 
 </body>
