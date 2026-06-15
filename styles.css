@@ -785,6 +785,29 @@
       padding: 0.4rem 0.8rem;
     }
 
+    /* Link "Ver no GitHub" no rodapé de cada card de projeto */
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--color-accent);
+      transition: var(--transition);
+    }
+    .project-link svg {
+      width: 16px;
+      height: 16px;
+      transition: transform var(--transition);
+    }
+    .project-link:hover {
+      color: var(--color-text);
+    }
+    .project-link:hover svg {
+      transform: translate(2px, -2px);
+    }
+
     /* Card "Em breve" — estilo tracejado com cursor piscando */
     .project-card.coming-soon {
       background: var(--color-border);
