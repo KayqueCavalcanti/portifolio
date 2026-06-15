@@ -1,0 +1,19 @@
+{
+  "name": "Kayque Cavalcanti da Silva | Portfólio",
+  "short_name": "KC.dev",
+  "description": "Portfólio de Kayque Cavalcanti da Silva — Técnico de TI & Estudante de Engenharia de Software.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

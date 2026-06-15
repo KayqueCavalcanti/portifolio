@@ -674,3 +674,736 @@
         konamiProgress = key === KONAMI_CODE[0] ? 1 : 0;
       }
     });
+
+    // -----------------------------------------------------------
+    // 9. WEB COMPONENT NATIVO: <project-card>
+    //    Encapsula o card de projeto em Shadow DOM, reaproveitando
+    //    o styles.css global via <link> e projetando descrição/tags
+    //    via <slot>. Ao clicar em "Ver estudo de caso", dispara um
+    //    evento customizado (bubbles + composed) consumido pelo
+    //    Drawer de Arquitetura (seção 11)
+    // -----------------------------------------------------------
+    class ProjectCard extends HTMLElement {
+      connectedCallback() {
+        if (this.shadowRoot) return;
+
+        const number = this.getAttribute('number') || '';
+        const title = this.getAttribute('title') || '';
+        const github = this.getAttribute('github') || '#';
+        const caseStudy = this.getAttribute('case-study') || '';
+        const featured = this.hasAttribute('featured');
+
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+          <link rel="stylesheet" href="styles.css">
+          <style>
+            :host {
+              display: flex;
+              flex: 0 0 clamp(280px, 85vw, 380px);
+              scroll-snap-align: start;
+            }
+            :host([featured]) {
+              flex-basis: clamp(280px, 90vw, 540px);
+            }
+            article.project-card {
+              width: 100%;
+            }
+          </style>
+          <article class="project-card${featured ? ' featured' : ''}">
+            <div class="card-inner">
+              <div class="project-header">
+                <span class="project-number">${escapeHtml(number)}</span>
+                <h3>${escapeHtml(title)}</h3>
+              </div>
+              <slot name="description"></slot>
+              <div class="tags"><slot name="tags"></slot></div>
+              <button class="project-link" type="button">
+                Ver estudo de caso
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </button>
+            </div>
+          </article>
+        `;
+
+        shadow.querySelector('.project-link').addEventListener('click', () => {
+          this.dispatchEvent(new CustomEvent('open-case-study', {
+            bubbles: true,
+            composed: true,
+            detail: { id: caseStudy, title, github },
+          }));
+        });
+      }
+    }
+
+    customElements.define('project-card', ProjectCard);
+
+    // -----------------------------------------------------------
+    // 10. VIEW TRANSITIONS API — transição nativa entre estados da
+    //     página (Drawer de Arquitetura, Modo Terminal). Em
+    //     navegadores sem suporte, a função roda direto, sem
+    //     transição (fallback seguro)
+    // -----------------------------------------------------------
+    function withViewTransition(updateFn) {
+      if (document.startViewTransition) {
+        document.startViewTransition(updateFn);
+      } else {
+        updateFn();
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 11. DRAWER DE ARQUITETURA (ESTUDO DE CASO)
+    //     Gaveta lateral com diagrama ASCII e trecho de código
+    //     (fonte VT323) para cada projeto, aberta pelo evento
+    //     "open-case-study" disparado pelo <project-card>
+    // -----------------------------------------------------------
+    const CASE_STUDIES = {
+      'torre-de-comando': {
+        summary: 'Dashboard central que consulta a saúde de GitLab, Nexus, UrbanCode e Apptio em intervalos configuráveis, grava o histórico em SQLite e dispara alertas no Slack quando algum serviço cai.',
+        diagram: `+-----------+        +------------------+        +-----------------+
+|  BROWSER  | <----- |   FLASK APP.PY   | -----> |     SQLITE      |
+|   (UI)    |  HTML  |    /dashboard    |  ORM   |  historico.db   |
++-----------+        +------------------+        +-----------------+
+                             |   ^
+                       ping  |   | status
+                             v   |
+                  +----------------------------+
+                  |         SERVIDORES          |
+                  |  GitLab / Nexus / UrbanCode  |
+                  |          / Apptio            |
+                  +----------------------------+
+                             |
+                       falha |
+                             v
+                  +----------------------------+
+                  |        ALERTA SLACK          |
+                  +----------------------------+`,
+        code: `# Strategy + Factory: cada serviço tem sua propria forma de "ping"
+class HealthCheck(ABC):
+    @abstractmethod
+    def check(self, target: str) -> Result: ...
+
+class HttpHealthCheck(HealthCheck):
+    def check(self, target):
+        start = time.perf_counter()
+        try:
+            resp = requests.get(target, timeout=3)
+            latency = (time.perf_counter() - start) * 1000
+            return Result(target, resp.ok, latency)
+        except requests.RequestException:
+            return Result(target, False, None)
+
+class CheckerFactory:
+    _strategies = {"gitlab": HttpHealthCheck(), "nexus": HttpHealthCheck()}
+
+    @classmethod
+    def get(cls, service: str) -> HealthCheck:
+        return cls._strategies[service]
+
+# Singleton: um único histórico compartilhado por toda a app
+class HistoryRepository:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance`,
+      },
+      'painel-monitoramento': {
+        summary: 'Telemetria de CPU, RAM, disco, rede e processos transmitida via WebSocket em tempo real, com histórico persistido em SQLite e alertas de limite configuráveis.',
+        diagram: `+-----------+   WebSocket   +-----------------+   psutil   +------------------+
+|  BROWSER  | <===========> |  FLASK-SOCKETIO | ---------> | CPU / RAM / DISCO |
+| (gráficos)|               |    server.py    |            | REDE / PROCESSOS  |
++-----------+               +-----------------+            +------------------+
+                                     |
+                                     v
+                             +-----------------+
+                             |     SQLITE      |
+                             |  historico.db   |
+                             +-----------------+`,
+        code: `# Observer: cada cliente conectado "assina" o stream de métricas
+class MetricsBroadcaster:
+    def __init__(self):
+        self._subscribers = []
+
+    def subscribe(self, callback):
+        self._subscribers.append(callback)
+
+    def emit(self, snapshot: dict):
+        for callback in self._subscribers:
+            callback(snapshot)
+
+@socketio.on("connect")
+def on_connect():
+    broadcaster.subscribe(
+        lambda snap: socketio.emit("metrics", snap)
+    )
+
+def sample_loop():
+    while True:
+        broadcaster.emit({
+            "cpu": psutil.cpu_percent(),
+            "ram": psutil.virtual_memory().percent,
+        })
+        time.sleep(1)`,
+      },
+      'processador-ocr': {
+        summary: 'API assíncrona que recebe PDFs, enfileira o processamento no RabbitMQ (com DLQ e retry) e extrai texto via parsing nativo, com fallback de OCR (Tesseract) para documentos digitalizados.',
+        diagram: `+----------+  upload   +-----------+  publish   +-----------+
+| CLIENTE  | --------> |  FASTAPI  | ---------> |  RABBITMQ |
++----------+   PDF     |  /upload  |   job      +-----------+
+                        +-----------+                  |
+                                                         v
+                                              +-----------------+
+                                              |      WORKER      |
+                                              | parse | tesseract |
+                                              +-----------------+
+                                                  |          |
+                                          sucesso |          | falha
+                                                  v          v
+                                          +-----------+  +-----+
+                                          |  SQLITE   |  | DLQ |
+                                          +-----------+  +-----+`,
+        code: `# Retry com backoff exponencial antes de cair na Dead Letter Queue
+@retry(max_attempts=5, backoff=exponential_backoff)
+def process_pdf(job: Job) -> ExtractedText:
+    text = parse_native_text(job.file_path)
+
+    if not text.strip():
+        # Fallback: documento escaneado -> OCR via Tesseract
+        text = ocr_fallback(job.file_path)
+
+    return ExtractedText(job_id=job.id, content=text)
+
+def on_message(channel, method, properties, body):
+    job = Job.from_json(body)
+    try:
+        result = process_pdf(job)
+        repository.save(result)
+        channel.basic_ack(method.delivery_tag)
+    except MaxRetriesExceeded:
+        channel.basic_publish(exchange="dlq", body=body)`,
+      },
+      'sistema-cotacao': {
+        summary: 'Fluxo completo de orçamento: o cliente envia uma solicitação, a API FastAPI registra no SQLite e gera a proposta consumida pelo front-end em HTML/CSS/JS.',
+        diagram: `+----------+   form    +-----------------+   ORM   +-----------+
+| CLIENTE  | --------> |     FASTAPI     | ------> |  SQLITE   |
+| (HTML/JS)|           |  POST /quotes   |         |  app.db   |
++----------+           +-----------------+         +-----------+
+     ^                          |
+     |        GET /quotes/:id   |
+     +--------------------------+
+                  |
+                  v
+        +-------------------+
+        |  PROPOSTA (HTML)  |
+        +-------------------+`,
+        code: `class QuoteStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+@app.post("/quotes", response_model=QuoteOut)
+def create_quote(payload: QuoteIn, db: Session = Depends(get_db)):
+    quote = Quote(**payload.dict(), status=QuoteStatus.PENDING)
+    db.add(quote)
+    db.commit()
+    db.refresh(quote)
+    return quote
+
+@app.get("/quotes/{quote_id}", response_model=QuoteOut)
+def get_quote(quote_id: int, db: Session = Depends(get_db)):
+    quote = db.get(Quote, quote_id)
+    if not quote:
+        raise HTTPException(status_code=404)
+    return quote`,
+      },
+    };
+
+    const drawerEl = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const drawerBody = document.getElementById('drawerBody');
+    const drawerGithubBtn = document.getElementById('drawerGithubBtn');
+    const drawerCloseX = document.getElementById('drawerCloseX');
+    const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+
+    function openDrawer({ id, title, github }) {
+      const study = CASE_STUDIES[id];
+      if (!study) return;
+
+      drawerBody.innerHTML = `
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(study.summary)}</p>
+        <span class="drawer-subtitle">// Arquitetura</span>
+        <pre class="drawer-diagram"><code>${escapeHtml(study.diagram)}</code></pre>
+        <span class="drawer-subtitle">// Trecho de código</span>
+        <pre class="drawer-code"><code>${escapeHtml(study.code)}</code></pre>
+      `;
+      drawerGithubBtn.href = github || '#';
+
+      withViewTransition(() => {
+        document.body.classList.add('drawer-open');
+        drawerOverlay.classList.add('visible');
+        drawerEl.classList.add('open');
+        drawerEl.setAttribute('aria-hidden', 'false');
+        drawerOverlay.setAttribute('aria-hidden', 'false');
+      });
+    }
+
+    function closeDrawer() {
+      withViewTransition(() => {
+        document.body.classList.remove('drawer-open');
+        drawerOverlay.classList.remove('visible');
+        drawerEl.classList.remove('open');
+        drawerEl.setAttribute('aria-hidden', 'true');
+        drawerOverlay.setAttribute('aria-hidden', 'true');
+      });
+    }
+
+    document.addEventListener('open-case-study', (e) => openDrawer(e.detail));
+    drawerCloseX.addEventListener('click', closeDrawer);
+    drawerCloseBtn.addEventListener('click', closeDrawer);
+    drawerOverlay.addEventListener('click', closeDrawer);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawerEl.classList.contains('open')) closeDrawer();
+    });
+
+    // -----------------------------------------------------------
+    // 12. MODO TERMINAL — interface de CLI em tela cheia, com um
+    //     interpretador básico de comandos em Vanilla JS
+    // -----------------------------------------------------------
+    const cliToggle = document.getElementById('cliToggle');
+    const terminalOverlay = document.getElementById('terminalOverlay');
+    const terminalOutput = document.getElementById('terminalOutput');
+    const terminalInput = document.getElementById('terminalInput');
+
+    const WHOAMI_TEXT = 'Kayque Cavalcanti — Técnico de TI & Estudante de Engenharia de Software.';
+
+    const PROJECTS_LS = ['monitoramento/', 'wp_craft/', 'wp_infra/', 'wp_soft/', 'processador-pdfs/'];
+
+    const SOBRE_TXT = [
+      'Foco em fundamentos de baixo nível: C, gestão manual de memória,',
+      'ponteiros e análise de complexidade de algoritmos (notação Big O).',
+      'Esses fundamentos guiam um trabalho orientado a infraestrutura --',
+      'monitoramento de servidores, redes e automação -- sempre buscando',
+      'soluções corretas e eficientes de ponta a ponta, do hardware ao',
+      'código de aplicação.',
+    ];
+
+    const PING_HOSTS = {
+      'torre-de-comando': '192.168.1.10',
+      'monitoramento': '192.168.1.10',
+      'wp_infra': '10.0.0.4',
+      'wp_craft': '10.0.0.8',
+      'wp_soft': '10.0.0.12',
+      'processador-pdfs': '10.0.0.21',
+      localhost: '127.0.0.1',
+    };
+
+    function printLine(text, className = '') {
+      const line = document.createElement('span');
+      line.className = className ? `term-line ${className}` : 'term-line';
+      line.textContent = text;
+      terminalOutput.appendChild(line);
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    function printCommand(cmd) {
+      const line = document.createElement('span');
+      line.className = 'term-line term-cmd';
+      line.textContent = cmd;
+      terminalOutput.appendChild(line);
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function pingTarget(target) {
+      if (!target) {
+        printLine('uso: ping [alvo]', 'term-muted');
+        return;
+      }
+
+      const ip = PING_HOSTS[target] || `10.0.0.${Math.floor(Math.random() * 200) + 2}`;
+      printLine(`Pinging ${target} [${ip}] with 32 bytes of data:`);
+
+      const samples = 4;
+      let total = 0;
+      let min = Infinity;
+      let max = 0;
+
+      for (let i = 0; i < samples; i++) {
+        await wait(260 + Math.random() * 220);
+        const latency = Math.floor(8 + Math.random() * 30);
+        total += latency;
+        min = Math.min(min, latency);
+        max = Math.max(max, latency);
+        printLine(`Reply from ${ip}: bytes=32 time=${latency}ms TTL=64`);
+      }
+
+      printLine('');
+      printLine(`Ping statistics for ${ip}:`);
+      printLine(`    Packets: Sent = ${samples}, Received = ${samples}, Lost = 0 (0% loss)`, 'term-muted');
+      printLine('Approximate round trip times in milli-seconds:', 'term-muted');
+      printLine(`    Minimum = ${min}ms, Maximum = ${max}ms, Average = ${Math.round(total / samples)}ms`, 'term-muted');
+    }
+
+    const TERMINAL_COMMANDS = {
+      help() {
+        printLine('Comandos disponíveis:');
+        printLine('');
+        const rows = [
+          ['help', 'lista os comandos disponíveis'],
+          ['whoami', 'exibe um resumo sobre mim'],
+          ['ls', 'lista os diretórios de projetos'],
+          ['cat sobre.txt', 'imprime um resumo técnico sobre mim'],
+          ['ping [alvo]', 'simula um teste de latência de rede'],
+          ['clear', 'limpa a tela do terminal'],
+          ['exit', 'fecha o terminal e volta para a interface'],
+        ];
+        const width = Math.max(...rows.map(([cmd]) => cmd.length)) + 4;
+        rows.forEach(([cmd, desc]) => {
+          printLine(`  ${cmd.padEnd(width)}${desc}`, 'term-muted');
+        });
+      },
+      whoami() {
+        printLine(WHOAMI_TEXT);
+      },
+      ls() {
+        printLine(PROJECTS_LS.join('   '));
+      },
+      cat(args) {
+        if (!args[0]) {
+          printLine('uso: cat [arquivo]', 'term-muted');
+        } else if (args[0] === 'sobre.txt') {
+          SOBRE_TXT.forEach((line) => printLine(line));
+        } else {
+          printLine(`cat: ${args[0]}: No such file or directory`, 'term-muted');
+        }
+      },
+      ping(args) {
+        return pingTarget(args[0]);
+      },
+      clear() {
+        terminalOutput.innerHTML = '';
+      },
+      exit() {
+        closeTerminal();
+      },
+    };
+
+    function runCommand(raw) {
+      const trimmed = raw.trim();
+      printCommand(trimmed);
+
+      if (trimmed) {
+        const [cmd, ...args] = trimmed.split(/\s+/);
+        const handler = TERMINAL_COMMANDS[cmd.toLowerCase()];
+
+        if (handler) {
+          handler(args);
+        } else {
+          printLine(`bash: ${cmd}: command not found`, 'term-muted');
+        }
+      }
+
+      terminalOutput.scrollTop = terminalOutput.scrollHeight;
+    }
+
+    function openTerminal() {
+      withViewTransition(() => {
+        document.body.classList.add('terminal-mode');
+        terminalOverlay.classList.add('active');
+        terminalOverlay.setAttribute('aria-hidden', 'false');
+      });
+
+      if (!terminalOutput.dataset.welcomed) {
+        printLine('Bem-vindo ao modo terminal.');
+        printLine('Digite "help" para ver os comandos disponíveis.', 'term-muted');
+        printLine('');
+        terminalOutput.dataset.welcomed = 'true';
+      }
+
+      terminalInput.focus();
+    }
+
+    function closeTerminal() {
+      withViewTransition(() => {
+        document.body.classList.remove('terminal-mode');
+        terminalOverlay.classList.remove('active');
+        terminalOverlay.setAttribute('aria-hidden', 'true');
+      });
+    }
+
+    cliToggle.addEventListener('click', openTerminal);
+
+    terminalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && terminalInput.value.trim() !== '') {
+        const value = terminalInput.value;
+        terminalInput.value = '';
+        runCommand(value);
+      } else if (e.key === 'Enter') {
+        terminalInput.value = '';
+      }
+    });
+
+    terminalOverlay.addEventListener('click', () => terminalInput.focus());
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && terminalOverlay.classList.contains('active')) {
+        closeTerminal();
+      }
+    });
+
+    // -----------------------------------------------------------
+    // 13. WIDGET DE TELEMETRIA (dogfooding) — painel fixo no canto
+    //     inferior direito simulando um sistema sob monitoramento
+    // -----------------------------------------------------------
+    const telemetryUptime = document.getElementById('telemetryUptime');
+    const telemetryMem = document.getElementById('telemetryMem');
+
+    setInterval(() => {
+      const mem = (42 + (Math.random() * 6 - 3)).toFixed(1);
+      telemetryMem.textContent = `${mem}MB`;
+
+      const uptime = (99.9 - Math.random() * 0.08).toFixed(2);
+      telemetryUptime.textContent = `${uptime}%`;
+    }, 2200);
+
+    // -----------------------------------------------------------
+    // 14. BOOT SEQUENCE — log de inicialização exibido ao carregar
+    //     a página, reforçando a estética de terminal/infra.
+    //     Clicar ou pressionar qualquer tecla pula a animação
+    // -----------------------------------------------------------
+    const bootScreen = document.getElementById('bootScreen');
+    const bootLog = document.getElementById('bootLog');
+
+    const BOOT_LINES = [
+      ['kayque-portfolio boot v1.0', ''],
+      ['Inicializando núcleo................ [ OK ]', 'boot-muted'],
+      ['Montando seções (about, projects)... [ OK ]', 'boot-muted'],
+      ['Carregando estilos e fontes......... [ OK ]', 'boot-muted'],
+      ['Conectando à API do GitHub.......... [ OK ]', 'boot-muted'],
+      ['Calibrando easter eggs............... [ OK ]', 'boot-muted'],
+      ['Sistema pronto.', ''],
+    ];
+
+    function skipBootSequence() {
+      bootScreen.classList.add('hidden');
+      document.body.classList.remove('boot-active');
+    }
+
+    if (prefersReducedMotion) {
+      bootScreen.remove();
+    } else {
+      document.body.classList.add('boot-active');
+
+      BOOT_LINES.forEach(([text, className], i) => {
+        setTimeout(() => {
+          const line = document.createElement('span');
+          line.className = className ? `boot-line ${className}` : 'boot-line';
+          line.textContent = text;
+          bootLog.appendChild(line);
+
+          if (i === BOOT_LINES.length - 1) {
+            const cursor = document.createElement('span');
+            cursor.className = 'boot-cursor';
+            line.appendChild(cursor);
+          }
+        }, i * 130);
+      });
+
+      setTimeout(skipBootSequence, BOOT_LINES.length * 130 + 450);
+
+      bootScreen.addEventListener('click', skipBootSequence);
+      window.addEventListener('keydown', skipBootSequence, { once: true });
+    }
+
+    // -----------------------------------------------------------
+    // 15. CURSOR CUSTOMIZADO — retícula que segue o mouse com
+    //     suavização (lerp), reagindo a links, botões e tags
+    // -----------------------------------------------------------
+    const customCursor = document.getElementById('customCursor');
+    const customCursorDot = document.getElementById('customCursorDot');
+    const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    if (!prefersReducedMotion && supportsFinePointer) {
+      document.body.classList.add('custom-cursor-active');
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let ringX = mouseX;
+      let ringY = mouseY;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        customCursorDot.style.left = `${mouseX}px`;
+        customCursorDot.style.top = `${mouseY}px`;
+      });
+
+      (function animateCursor() {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        customCursor.style.left = `${ringX}px`;
+        customCursor.style.top = `${ringY}px`;
+        requestAnimationFrame(animateCursor);
+      })();
+
+      const CURSOR_HOVER_SELECTOR = 'a, button, input, .tag, [role="button"]';
+
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(CURSOR_HOVER_SELECTOR)) {
+          customCursor.classList.add('hover');
+        }
+      });
+      document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(CURSOR_HOVER_SELECTOR)) {
+          customCursor.classList.remove('hover');
+        }
+      });
+      document.addEventListener('mousedown', () => customCursor.classList.add('click'));
+      document.addEventListener('mouseup', () => customCursor.classList.remove('click'));
+    }
+
+    // -----------------------------------------------------------
+    // 16. PALETA DE COMANDOS (CTRL+K) — busca rápida estilo
+    //     VS Code/Spotlight, com navegação por seções e ações
+    // -----------------------------------------------------------
+    const cmdkHint = document.getElementById('cmdkHint');
+    const cmdkOverlay = document.getElementById('cmdkOverlay');
+    const cmdkInput = document.getElementById('cmdkInput');
+    const cmdkList = document.getElementById('cmdkList');
+
+    function scrollToSection(selector) {
+      const target = document.querySelector(selector);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const COMMAND_LIST = [
+      { label: 'Início', tag: 'Seção', action: () => scrollToSection('#home') },
+      { label: 'Sobre mim', tag: 'Seção', action: () => scrollToSection('#about') },
+      { label: 'Projetos Recentes', tag: 'Seção', action: () => scrollToSection('#projects') },
+      { label: 'Repositórios no GitHub', tag: 'Seção', action: () => scrollToSection('#github-projects') },
+      { label: 'Máquina de Desenvolvimento', tag: 'Seção', action: () => scrollToSection('#dev-machine') },
+      { label: 'Serviços', tag: 'Seção', action: () => scrollToSection('#services') },
+      { label: 'Changelog', tag: 'Seção', action: () => scrollToSection('#changelog') },
+      { label: 'Contato', tag: 'Seção', action: () => scrollToSection('#contact') },
+      { label: 'Abrir Modo Terminal', tag: 'Ação', action: () => openTerminal() },
+      { label: 'GitHub — KayqueCavalcanti', tag: 'Link', action: () => window.open('https://github.com/KayqueCavalcanti?tab=repositories', '_blank', 'noopener') },
+      { label: 'LinkedIn', tag: 'Link', action: () => window.open('https://www.linkedin.com/in/kayque-cavalcanti-090438350/', '_blank', 'noopener') },
+      { label: 'Baixar Currículo (PDF)', tag: 'Link', action: () => window.open('curriculo-kayque-cavalcanti.pdf', '_blank', 'noopener') },
+    ];
+
+    let cmdkFiltered = COMMAND_LIST;
+    let cmdkActiveIndex = 0;
+
+    function renderCommandList() {
+      const query = cmdkInput.value.trim().toLowerCase();
+      cmdkFiltered = COMMAND_LIST.filter((cmd) => cmd.label.toLowerCase().includes(query));
+      cmdkActiveIndex = 0;
+
+      if (cmdkFiltered.length === 0) {
+        cmdkList.innerHTML = '<p class="cmdk-empty">Nenhum resultado encontrado.</p>';
+        return;
+      }
+
+      cmdkList.innerHTML = cmdkFiltered
+        .map((cmd, i) => `
+          <div class="cmdk-item${i === 0 ? ' active' : ''}" data-index="${i}">
+            <span>${escapeHtml(cmd.label)}</span>
+            <span class="cmdk-item-tag">${escapeHtml(cmd.tag)}</span>
+          </div>
+        `)
+        .join('');
+    }
+
+    function updateActiveItem() {
+      cmdkList.querySelectorAll('.cmdk-item').forEach((item, i) => {
+        item.classList.toggle('active', i === cmdkActiveIndex);
+      });
+      const active = cmdkList.querySelector('.cmdk-item.active');
+      if (active) active.scrollIntoView({ block: 'nearest' });
+    }
+
+    function runActiveCommand() {
+      const cmd = cmdkFiltered[cmdkActiveIndex];
+      if (!cmd) return;
+      closeCommandPalette();
+      cmd.action();
+    }
+
+    function openCommandPalette() {
+      cmdkInput.value = '';
+      renderCommandList();
+
+      withViewTransition(() => {
+        document.body.classList.add('cmdk-open');
+        cmdkOverlay.classList.add('visible');
+        cmdkOverlay.setAttribute('aria-hidden', 'false');
+      });
+
+      cmdkInput.focus();
+    }
+
+    function closeCommandPalette() {
+      withViewTransition(() => {
+        document.body.classList.remove('cmdk-open');
+        cmdkOverlay.classList.remove('visible');
+        cmdkOverlay.setAttribute('aria-hidden', 'true');
+      });
+    }
+
+    cmdkHint.addEventListener('click', openCommandPalette);
+
+    cmdkInput.addEventListener('input', renderCommandList);
+
+    cmdkInput.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        cmdkActiveIndex = Math.min(cmdkActiveIndex + 1, cmdkFiltered.length - 1);
+        updateActiveItem();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        cmdkActiveIndex = Math.max(cmdkActiveIndex - 1, 0);
+        updateActiveItem();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        runActiveCommand();
+      } else if (e.key === 'Escape') {
+        closeCommandPalette();
+      }
+    });
+
+    cmdkList.addEventListener('click', (e) => {
+      const item = e.target.closest('.cmdk-item');
+      if (!item) return;
+      cmdkActiveIndex = Number(item.dataset.index);
+      runActiveCommand();
+    });
+
+    cmdkOverlay.addEventListener('click', (e) => {
+      if (e.target === cmdkOverlay) closeCommandPalette();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (cmdkOverlay.classList.contains('visible')) {
+          closeCommandPalette();
+        } else {
+          openCommandPalette();
+        }
+      }
+    });
+
+    // -----------------------------------------------------------
+    // 17. PWA — registra o service worker para cache de assets e
+    //     uso offline (ver sw.js e manifest.json)
+    // -----------------------------------------------------------
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }

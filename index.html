@@ -10,6 +10,26 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#050505" />
+
+  <!-- Dados estruturados (SEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Kayque Cavalcanti da Silva",
+    "jobTitle": "Técnico de TI & Estudante de Engenharia de Software",
+    "url": "https://kayquecavalcanti.github.io/portifolio/",
+    "image": "https://kayquecavalcanti.github.io/portifolio/perfil.jpg",
+    "sameAs": [
+      "https://github.com/KayqueCavalcanti",
+      "https://www.linkedin.com/in/kayque-cavalcanti-090438350/"
+    ]
+  }
+  </script>
+
   <!-- Open Graph / Twitter Card -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://kayquecavalcanti.github.io/portifolio/" />
@@ -30,8 +50,23 @@
 </head>
 <body>
 
+  <!-- Acessibilidade: link para pular direto ao conteúdo -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+  <!-- ============================ BOOT SEQUENCE ============================ -->
+  <div class="boot-screen" id="bootScreen" aria-hidden="true">
+    <pre class="boot-log" id="bootLog"></pre>
+  </div>
+
+  <!-- ============================ CURSOR CUSTOMIZADO ============================ -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true"></div>
+  <div class="custom-cursor-dot" id="customCursorDot" aria-hidden="true"></div>
+
+  <!-- ============================ SCANLINES (CRT) ============================ -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+
   <!-- ============================ NAVBAR ============================ -->
-  <nav class="navbar" id="navbar">
+  <nav class="navbar" id="navbar" aria-label="Navegação principal">
     <div class="container nav-container">
       <a href="#home" class="logo">KC<span class="dot">.</span>dev</a>
 
@@ -41,6 +76,7 @@
         <li><a href="#projects" class="nav-link">Projetos</a></li>
         <li><a href="#services" class="nav-link">Serviços</a></li>
         <li><a href="#contact" class="nav-link nav-cta">Contato</a></li>
+        <li><button class="cli-toggle" id="cliToggle" type="button">[ &gt;_ CLI ]</button></li>
       </ul>
 
       <button class="nav-toggle" id="navToggle" aria-label="Abrir menu">
@@ -48,6 +84,8 @@
       </button>
     </div>
   </nav>
+
+  <main id="main-content">
 
   <!-- ============================ HERO ============================ -->
   <header class="hero" id="home">
@@ -150,103 +188,80 @@
       <div class="projects-grid" id="projectsGrid">
 
         <!-- Card 1: Torre de Comando (destaque) -->
-        <article class="project-card featured reveal">
-          <div class="card-inner">
-            <div class="project-header">
-              <span class="project-number">LVL. 01</span>
-              <h3>Torre de Comando</h3>
-            </div>
-            <p>
-              Dashboard de monitoramento e auditoria de ferramentas DevOps (GitLab, Nexus, UrbanCode, Apptio)
-              em Python/Flask, aplicando Clean Code, Design Patterns (Strategy, Factory, Singleton) e SOLID.
-              Inclui histórico em SQLite, alertas via Slack, testes unitários e pipeline de CI/CD no GitLab.
-            </p>
-            <div class="tags">
-              <span class="tag">Python</span>
-              <span class="tag">Flask</span>
-              <span class="tag">SOLID</span>
-              <span class="tag">CI/CD</span>
-            </div>
-            <a href="https://github.com/KayqueCavalcanti/command-tower" target="_blank" rel="noopener noreferrer" class="project-link">
-              Ver no GitHub
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </article>
+        <project-card
+          class="reveal"
+          featured
+          number="LVL. 01"
+          title="Torre de Comando"
+          github="https://github.com/KayqueCavalcanti/command-tower"
+          case-study="torre-de-comando"
+        >
+          <p slot="description">
+            Dashboard de monitoramento e auditoria de ferramentas DevOps (GitLab, Nexus, UrbanCode, Apptio)
+            em Python/Flask, aplicando Clean Code, Design Patterns (Strategy, Factory, Singleton) e SOLID.
+            Inclui histórico em SQLite, alertas via Slack, testes unitários e pipeline de CI/CD no GitLab.
+          </p>
+          <span slot="tags" class="tag">Python</span>
+          <span slot="tags" class="tag">Flask</span>
+          <span slot="tags" class="tag">SOLID</span>
+          <span slot="tags" class="tag">CI/CD</span>
+        </project-card>
 
         <!-- Card 2: Painel de Monitoramento -->
-        <article class="project-card reveal reveal-delay-1">
-          <div class="card-inner">
-            <div class="project-header">
-              <span class="project-number">LVL. 02</span>
-              <h3>Painel de Monitoramento</h3>
-            </div>
-            <p>
-              Dashboard de monitoramento de sistemas em tempo real, com telemetria via WebSocket
-              de CPU, RAM, disco, rede e processos, gráficos reativos, histórico persistido em
-              SQLite e alertas de limite configuráveis.
-            </p>
-            <div class="tags">
-              <span class="tag">Python</span>
-              <span class="tag">Flask</span>
-              <span class="tag">WebSocket</span>
-              <span class="tag">Vanilla JS</span>
-            </div>
-            <a href="https://github.com/KayqueCavalcanti/dashboard-interativo" target="_blank" rel="noopener noreferrer" class="project-link">
-              Ver no GitHub
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </article>
+        <project-card
+          class="reveal reveal-delay-1"
+          number="LVL. 02"
+          title="Painel de Monitoramento"
+          github="https://github.com/KayqueCavalcanti/dashboard-interativo"
+          case-study="painel-monitoramento"
+        >
+          <p slot="description">
+            Dashboard de monitoramento de sistemas em tempo real, com telemetria via WebSocket
+            de CPU, RAM, disco, rede e processos, gráficos reativos, histórico persistido em
+            SQLite e alertas de limite configuráveis.
+          </p>
+          <span slot="tags" class="tag">Python</span>
+          <span slot="tags" class="tag">Flask</span>
+          <span slot="tags" class="tag">WebSocket</span>
+          <span slot="tags" class="tag">Vanilla JS</span>
+        </project-card>
 
         <!-- Card 3: Processador OCR de PDF Assíncrono -->
-        <article class="project-card reveal reveal-delay-2">
-          <div class="card-inner">
-            <div class="project-header">
-              <span class="project-number">LVL. 03</span>
-              <h3>Processador OCR de PDF</h3>
-            </div>
-            <p>
-              API REST em FastAPI que recebe uploads de PDF e enfileira o processamento com
-              RabbitMQ (DLQ + retry com backoff exponencial), extraindo texto via parsing nativo
-              com fallback de OCR (Tesseract) para documentos digitalizados, com persistência em
-              SQLite e cobertura de testes de integração.
-            </p>
-            <div class="tags">
-              <span class="tag">FastAPI</span>
-              <span class="tag">RabbitMQ</span>
-              <span class="tag">OCR</span>
-              <span class="tag">Tesseract</span>
-            </div>
-            <a href="https://github.com/KayqueCavalcanti/processador-pdfs" target="_blank" rel="noopener noreferrer" class="project-link">
-              Ver no GitHub
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </article>
+        <project-card
+          class="reveal reveal-delay-2"
+          number="LVL. 03"
+          title="Processador OCR de PDF"
+          github="https://github.com/KayqueCavalcanti/processador-pdfs"
+          case-study="processador-ocr"
+        >
+          <p slot="description">
+            API REST em FastAPI que recebe uploads de PDF e enfileira o processamento com
+            RabbitMQ (DLQ + retry com backoff exponencial), extraindo texto via parsing nativo
+            com fallback de OCR (Tesseract) para documentos digitalizados, com persistência em
+            SQLite e cobertura de testes de integração.
+          </p>
+          <span slot="tags" class="tag">FastAPI</span>
+          <span slot="tags" class="tag">RabbitMQ</span>
+          <span slot="tags" class="tag">OCR</span>
+          <span slot="tags" class="tag">Tesseract</span>
+        </project-card>
 
         <!-- Card 4: Sistema de Cotação -->
-        <article class="project-card reveal">
-          <div class="card-inner">
-            <div class="project-header">
-              <span class="project-number">LVL. 04</span>
-              <h3>Sistema de Cotação</h3>
-            </div>
-            <p>
-              Sistema de orçamento e cotação com backend em FastAPI e frontend em HTML, CSS e
-              JavaScript, automatizando o fluxo entre solicitação e proposta.
-            </p>
-            <div class="tags">
-              <span class="tag">FastAPI</span>
-              <span class="tag">HTML/CSS/JS</span>
-              <span class="tag">Automação</span>
-            </div>
-            <a href="https://github.com/KayqueCavalcanti/quotation-system" target="_blank" rel="noopener noreferrer" class="project-link">
-              Ver no GitHub
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </a>
-          </div>
-        </article>
+        <project-card
+          class="reveal"
+          number="LVL. 04"
+          title="Sistema de Cotação"
+          github="https://github.com/KayqueCavalcanti/quotation-system"
+          case-study="sistema-cotacao"
+        >
+          <p slot="description">
+            Sistema de orçamento e cotação com backend em FastAPI e frontend em HTML, CSS e
+            JavaScript, automatizando o fluxo entre solicitação e proposta.
+          </p>
+          <span slot="tags" class="tag">FastAPI</span>
+          <span slot="tags" class="tag">HTML/CSS/JS</span>
+          <span slot="tags" class="tag">Automação</span>
+        </project-card>
 
         <!-- Card 5: Em breve -->
         <article class="project-card coming-soon reveal reveal-delay-1">
@@ -327,6 +342,44 @@
           <p>Banco de dados leve</p>
         </div>
       </div>
+
+      <div class="specs-panel reveal">
+        <div class="specs-header">
+          <span class="specs-prompt">guest@kayque-portfolio:~$</span> neofetch --skills
+        </div>
+        <div class="specs-grid">
+          <div class="spec-row">
+            <span class="spec-label">Python</span>
+            <span class="spec-bar"><span class="spec-fill" style="--target-width: 85%"></span></span>
+            <span class="spec-value">85%</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">C</span>
+            <span class="spec-bar"><span class="spec-fill" style="--target-width: 75%"></span></span>
+            <span class="spec-value">75%</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Estruturas de Dados</span>
+            <span class="spec-bar"><span class="spec-fill" style="--target-width: 80%"></span></span>
+            <span class="spec-value">80%</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Redes &amp; Infra</span>
+            <span class="spec-bar"><span class="spec-fill" style="--target-width: 78%"></span></span>
+            <span class="spec-value">78%</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Flask / FastAPI</span>
+            <span class="spec-bar"><span class="spec-fill" style="--target-width: 80%"></span></span>
+            <span class="spec-value">80%</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Git &amp; CI/CD</span>
+            <span class="spec-bar"><span class="spec-fill" style="--target-width: 70%"></span></span>
+            <span class="spec-value">70%</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -401,6 +454,27 @@
     </div>
   </section>
 
+  <!-- ============================ SYSTEM LOG (CHANGELOG) ============================ -->
+  <section class="changelog" id="changelog">
+    <div class="container">
+      <span class="section-label reveal">// System Log</span>
+      <h2 class="section-title reveal">Changelog</h2>
+      <p class="section-intro reveal">Histórico de versões deste portfólio — direto do log de commits.</p>
+
+      <pre class="changelog-log reveal"><code><span class="log-entry"><span class="log-head">HEAD -&gt; main</span> <span class="log-tag">v1.3.0</span>
+  feat: Web Components, View Transitions, Drawers de arquitetura, Modo Terminal,
+        Paleta de comandos (Ctrl+K), cursor customizado, boot sequence, PWA e CI/CD</span>
+
+<span class="log-entry"><span class="log-hash">fc2857c</span> <span class="log-tag">v1.1.0</span> <span class="log-date">2026-06-15</span>
+  Adicionar links de projetos, SEO/OG tags, favicon e currículo</span>
+
+<span class="log-entry"><span class="log-hash">86ae03d</span> <span class="log-tag">v1.0.0</span> <span class="log-date">2026-06-14</span>
+  Initial commit: portfolio site with hero Pong easter egg</span></code></pre>
+    </div>
+  </section>
+
+  </main>
+
   <!-- ============================ FOOTER ============================ -->
   <footer class="footer" id="contact">
     <div class="footer-glow" aria-hidden="true"></div>
@@ -448,6 +522,69 @@
       <p class="footer-copy">© 2026 Kayque Cavalcanti da Silva. Todos os direitos reservados.</p>
     </div>
   </footer>
+
+  <!-- ============================ DRAWER: ESTUDO DE CASO ============================ -->
+  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <span class="section-label">// Estudo de caso</span>
+      <button class="drawer-close" id="drawerCloseX" aria-label="Fechar estudo de caso">×</button>
+    </div>
+    <div class="drawer-body" id="drawerBody">
+      <!-- Conteúdo injetado dinamicamente via script.js -->
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-outline" id="drawerCloseBtn" type="button">Fechar</button>
+      <a class="btn btn-primary" id="drawerGithubBtn" href="#" target="_blank" rel="noopener noreferrer">
+        Ver no GitHub
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============================ MODO TERMINAL ============================ -->
+  <div class="terminal-overlay" id="terminalOverlay" aria-hidden="true">
+    <div class="terminal-window">
+      <div class="terminal-output" id="terminalOutput"></div>
+      <div class="terminal-input-line">
+        <span class="terminal-prompt">guest@kayque-portfolio:~$</span>
+        <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Comando do terminal" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ WIDGET DE TELEMETRIA ============================ -->
+  <div class="telemetry-widget" id="telemetryWidget" aria-hidden="true">
+    <span class="telemetry-dot"></span>
+    <span class="telemetry-item">SYS: <strong>ONLINE</strong></span>
+    <span class="telemetry-sep">|</span>
+    <span class="telemetry-item">UPTIME: <strong id="telemetryUptime">99.9%</strong></span>
+    <span class="telemetry-sep">|</span>
+    <span class="telemetry-item">MEM: <strong id="telemetryMem">42MB</strong></span>
+  </div>
+
+  <!-- ============================ PALETA DE COMANDOS (CTRL+K) ============================ -->
+  <button class="cmdk-hint" id="cmdkHint" type="button">
+    <kbd>Ctrl</kbd>+<kbd>K</kbd> Busca rápida
+  </button>
+  <div class="cmdk-overlay" id="cmdkOverlay" aria-hidden="true">
+    <div class="cmdk-panel">
+      <div class="cmdk-input-wrap">
+        <span aria-hidden="true">&gt;</span>
+        <input
+          type="text"
+          id="cmdkInput"
+          class="cmdk-input"
+          placeholder="Digite uma seção ou comando..."
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          aria-label="Busca rápida"
+        />
+      </div>
+      <div class="cmdk-list" id="cmdkList"></div>
+    </div>
+  </div>
 
   <!-- ============================ JAVASCRIPT ============================ -->
   <script src="script.js"></script>

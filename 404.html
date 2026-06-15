@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Página não encontrada | Kayque Cavalcanti</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#050505" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <!-- Fontes: Inter (corpo), VT323 (display/glitch) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Textura sutil de scanlines, igual à do site principal -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+
+  <main class="error-screen">
+    <pre class="error-log"><code><span class="error-prompt">guest@kayque-portfolio:~$</span> cd /pagina-solicitada
+bash: cd: /pagina-solicitada: No such file or directory
+
+<span class="error-code">ERRO 404</span> — rota não encontrada
+
+A página que você procura foi movida, removida ou nunca existiu
+neste sistema.</code></pre>
+
+    <a href="index.html" class="btn btn-primary">
+      cd ~ <span aria-hidden="true">&rarr;</span> voltar ao início
+    </a>
+  </main>
+
+</body>
+</html>
