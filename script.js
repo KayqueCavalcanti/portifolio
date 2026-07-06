@@ -1581,7 +1581,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
     const customCursorDot = document.getElementById('customCursorDot');
     const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    if (!prefersReducedMotion && supportsFinePointer) {
+    if (!prefersReducedMotion && supportsFinePointer && customCursor && customCursorDot) {
       document.body.classList.add('custom-cursor-active');
 
       let mouseX = window.innerWidth / 2;

@@ -5,9 +5,12 @@
 const TRANSLATIONS = {
   pt: {
     meta: {
-      title: 'Kayque Cavalcanti da Silva | Portfólio',
+      title: 'Kayque Cavalcanti da Silva | Desenvolvedor Backend Júnior',
     },
     skipLink: 'Pular para o conteúdo principal',
+    hero: {
+      subtitle: 'Desenvolvedor Backend Júnior',
+    },
     nav: {
       home: 'Início',
       about: 'Sobre',
@@ -104,6 +107,12 @@ const TRANSLATIONS = {
       specs: {
         dataStructures: 'Estruturas de Dados',
         networksInfra: 'Redes &amp; Infra',
+        pythonLevel: 'Uso diário',
+        cLevel: 'Base sólida',
+        dataStructuresLevel: 'Confortável',
+        networksInfraLevel: 'Uso diário',
+        flaskLevel: 'Confortável',
+        gitLevel: 'Em evolução',
       },
     },
     now: {
@@ -191,7 +200,7 @@ const TRANSLATIONS = {
         clear: 'limpa a tela do terminal',
         exit: 'fecha o terminal e volta para a interface',
       },
-      whoami: 'Kayque Cavalcanti — Técnico de TI & Estudante de Engenharia de Software.',
+      whoami: 'Kayque Cavalcanti — Desenvolvedor Backend Júnior | Técnico de TI | Estudante de Engenharia de Software.',
       sobre: [
         'Foco em fundamentos de baixo nível: C, gestão manual de memória,',
         'ponteiros e análise de complexidade de algoritmos (notação Big O).',
@@ -234,9 +243,12 @@ const TRANSLATIONS = {
 
   en: {
     meta: {
-      title: 'Kayque Cavalcanti da Silva | Portfolio',
+      title: 'Kayque Cavalcanti da Silva | Junior Backend Developer',
     },
     skipLink: 'Skip to main content',
+    hero: {
+      subtitle: 'Junior Backend Developer',
+    },
     nav: {
       home: 'Home',
       about: 'About',
@@ -333,6 +345,12 @@ const TRANSLATIONS = {
       specs: {
         dataStructures: 'Data Structures',
         networksInfra: 'Networking &amp; Infra',
+        pythonLevel: 'Daily use',
+        cLevel: 'Solid foundation',
+        dataStructuresLevel: 'Comfortable',
+        networksInfraLevel: 'Daily use',
+        flaskLevel: 'Comfortable',
+        gitLevel: 'Growing',
       },
     },
     now: {
@@ -420,7 +438,7 @@ const TRANSLATIONS = {
         clear: 'clears the terminal screen',
         exit: 'closes the terminal and returns to the interface',
       },
-      whoami: 'Kayque Cavalcanti — IT Technician & Software Engineering student.',
+      whoami: 'Kayque Cavalcanti — Junior Backend Developer | IT Technician | Software Engineering student.',
       sobre: [
         'Focused on low-level fundamentals: C, manual memory management,',
         'pointers, and algorithm complexity analysis (Big O notation).',

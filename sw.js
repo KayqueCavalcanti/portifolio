@@ -1,10 +1,11 @@
-const CACHE_NAME = 'kc-portfolio-v1';
+const CACHE_NAME = 'kc-portfolio-v2';
 
 const CORE_ASSETS = [
   './',
   './index.html',
   './styles.css',
   './script.js',
+  './translations.js',
   './manifest.json',
   './favicon.svg',
   './perfil.jpg',
@@ -40,7 +41,10 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => cached || caches.match('./index.html'));
+        .catch(() => {
+          if (request.mode === 'navigate') return caches.match('./index.html');
+          return cached;
+        });
 
       return cached || network;
     })
