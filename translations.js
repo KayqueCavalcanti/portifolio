@@ -31,7 +31,7 @@ const TRANSLATIONS = {
       title: 'Código que pensa.<br />Software que entrega.',
       badge: 'Disponível para novos projetos',
       p1: 'Tudo começou com uma pergunta de jogador: <strong>"o que está rodando por trás da tela?"</strong>. Essa curiosidade me levou direto para dentro da máquina — para C, gerenciamento de memória, complexidade de algoritmos (Big O) e as estruturas de dados que sustentam qualquer sistema, as mesmas que sustentam a engine, a física e as regras de um jogo, muito antes de me preocupar com o que aparece na tela.',
-      p2: 'Hoje, como estudante de <strong>Engenharia de Software</strong>, uso essa base para construir coisas reais — APIs, dashboards e ferramentas de automação. Gosto de pegar um problema, entender cada camada e cada estado envolvido — como quem estuda as regras de um jogo — e entregar uma solução que simplesmente funciona.',
+      p2: 'Hoje, como estudante de <strong>Engenharia de Software</strong>, construo minha carreira em <strong>backend e design de APIs</strong>. Meu interesse está em como sistemas se comportam sob pressão — filas de mensageria, tolerância a falhas, integrações confiáveis e código organizado o suficiente para crescer sem quebrar. Trabalho principalmente com <strong>Python</strong> e me preparo ativamente para minha primeira oportunidade profissional na área.',
       focus: {
         f1Title: 'Fundamentos',
         f1Text: 'C, lógica e estruturas de dados como base de tudo.',
@@ -118,9 +118,9 @@ const TRANSLATIONS = {
     now: {
       label: '// Agora',
       title: 'O que estou construindo agora',
-      item1: 'Aprofundando Estruturas de Dados e Algoritmos (notação Big O) na faculdade de Engenharia de Software.',
-      item2: 'Construindo uma nova ferramenta de automação para monitoramento de redes em Python.',
-      item3: 'Estudando Docker e pipelines de CI/CD para evoluir os projetos atuais.',
+      item1: 'Aprofundando Estruturas de Dados, Algoritmos e SQL (Banco de Dados com PostgreSQL) na faculdade.',
+      item2: 'Construindo projetos backend com foco em arquitetura limpa, filas de mensageria e tolerância a falhas.',
+      item3: 'Estudando TypeScript e Node.js para expandir o stack e evoluir para APIs mais robustas.',
     },
     quote: {
       author: '— Linus Torvalds, <span>criador do Linux e do Git</span>',
@@ -269,7 +269,7 @@ const TRANSLATIONS = {
       title: 'Code that thinks.<br />Software that delivers.',
       badge: 'Available for new projects',
       p1: 'It all started with a gamer\'s question: <strong>"what\'s running behind the screen?"</strong>. That curiosity took me straight into the machine — into C, manual memory management, algorithm complexity (Big O), and the data structures that underpin any system, the same ones that power a game\'s engine, physics, and rules, long before I ever worried about what shows up on screen.',
-      p2: 'Today, as a <strong>Software Engineering</strong> student, I use that foundation to build real things — APIs, dashboards, and automation tools. I like taking a real problem, understanding every layer and state involved — like studying the rules of a game — and delivering a solution that simply works.',
+      p2: 'Today, as a <strong>Software Engineering</strong> student, I\'m building my career in <strong>backend development and API design</strong>. My interest lies in how systems behave under pressure — message queues, fault tolerance, reliable integrations, and code organized well enough to grow without breaking. I work mainly with <strong>Python</strong> and I\'m actively preparing for my first professional opportunity in the field.',
       focus: {
         f1Title: 'Fundamentals',
         f1Text: 'C, logic, and data structures as the foundation for everything.',
@@ -356,9 +356,9 @@ const TRANSLATIONS = {
     now: {
       label: '// Now',
       title: 'What I\'m building right now',
-      item1: 'Deepening Data Structures and Algorithms (Big O notation) in my Software Engineering degree.',
-      item2: 'Building a new automation tool for network monitoring in Python.',
-      item3: 'Studying Docker and CI/CD pipelines to evolve the current projects.',
+      item1: 'Deepening Data Structures, Algorithms, and SQL (Databases with PostgreSQL) in my degree.',
+      item2: 'Building backend projects focused on clean architecture, message queues, and fault tolerance.',
+      item3: 'Studying TypeScript and Node.js to expand my stack and build more robust APIs.',
     },
     quote: {
       author: '— Linus Torvalds, <span>creator of Linux and Git</span>',
