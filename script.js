@@ -622,7 +622,8 @@
     }
 
     function buildSubtitleGrid() {
-      const result = buildBitmapGrid(heroSubtitleEl, heroSubtitleText, 1, 100);
+      const pongSubtitle = heroSubtitleEl.dataset.pongText || 'Engenheiro de Software';
+      const result = buildBitmapGrid(heroSubtitleEl, pongSubtitle, 1, 100);
       subtitleGrid = result.grid;
       subtitleCell = result.cell;
       Object.assign(subtitleRect, result.rect);
